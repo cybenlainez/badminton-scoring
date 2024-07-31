@@ -17,4 +17,5 @@ export interface ScoreDetails {
     p1Set3Score: number
     p2Set3Score: number
     currentSet: number
+    server: number
 }

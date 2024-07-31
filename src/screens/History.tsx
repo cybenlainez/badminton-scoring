@@ -85,9 +85,7 @@ const History = ({navigation, route}: any) => {
       setScores(JSON.parse(score));
 
       const currentGame = await AsyncStorage.getItem('currentGame');
-      if (currentGame != null) {
-        setCurrentGameDetails(JSON.parse(currentGame));
-      }
+      setCurrentGameDetails(JSON.parse(currentGame));
     } catch (e) {
       console.error(e);
     }

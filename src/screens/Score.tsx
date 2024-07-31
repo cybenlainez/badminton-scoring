@@ -38,11 +38,12 @@ const Score = ({navigation, route}: any) => {
     p1Set3Score: 0,
     p2Set3Score: 0,
     currentSet: 1,
+    server: 1,
   });
-  const [currentSet, setCurrentSet] = useState(1);
   const [isPlayer1Serving, setIsPlayer1Serving] = useState(true);
   const [player1Score, setPlayer1Score] = useState(0);
   const [player2Score, setPlayer2Score] = useState(0);
+  const [currentSet, setCurrentSet] = useState(1);
 
   const findCountry = (id: string) => {
     const row = countryData.find((item: any) => item.value === id);
@@ -89,8 +90,36 @@ const Score = ({navigation, route}: any) => {
     }
   };
 
-  const handlePause = () => {
-    updateCurrentGame(false);
+  const handlePause = async () => {
+    try {
+      const value: ScoreDetails = {
+        date: new Date(),
+        duration: 0,
+        venue: currentGameDetails.venue,
+        p1A: currentGameDetails.p1A,
+        p1B: currentGameDetails.p1B,
+        p2A: currentGameDetails.p2A,
+        p2B: currentGameDetails.p2B,
+        p1Country: currentGameDetails.p1Country,
+        p2Country: currentGameDetails.p2Country,
+        p1Score: player1Score,
+        p2Score: player2Score,
+        p1Set1Score: currentGameDetails.p1Set1Score,
+        p2Set1Score: currentGameDetails.p2Set1Score,
+        p1Set2Score: currentGameDetails.p1Set2Score,
+        p2Set2Score: currentGameDetails.p2Set2Score,
+        p1Set3Score: currentGameDetails.p1Set3Score,
+        p2Set3Score: currentGameDetails.p2Set3Score,
+        currentSet: currentSet,
+        server: isPlayer1Serving ? 1 : 2,
+      };
+
+      setCurrentGameDetails(value);
+      await AsyncStorage.setItem('currentGame', JSON.stringify(value));
+      console.log('Current game updated');
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   const handleReset = () => {
@@ -126,6 +155,7 @@ const Score = ({navigation, route}: any) => {
         p2Set3Score:
           currentSet === 3 ? player2Score : currentGameDetails.p2Set3Score,
         currentSet: reset ? 1 : currentSet,
+        server: isPlayer1Serving ? 1 : 2,
       };
 
       setCurrentGameDetails(value);
@@ -173,6 +203,7 @@ const Score = ({navigation, route}: any) => {
           p1Set3Score: currentGameDetails.p1Set3Score,
           p2Set3Score: currentGameDetails.p2Set3Score,
           currentSet: currentSet,
+          server: isPlayer1Serving ? 1 : 2,
         };
 
         if (!Array.isArray(newScore)) {
@@ -189,6 +220,7 @@ const Score = ({navigation, route}: any) => {
         console.error(e);
       }
     } else {
+      handlePause();
       navigation.goBack();
     }
   };
@@ -198,11 +230,12 @@ const Score = ({navigation, route}: any) => {
       const currentGame = await AsyncStorage.getItem('currentGame');
 
       if (currentGame != null) {
-        setCurrentGameDetails(JSON.parse(currentGame));
-
-
-        // CYHERE - FURTHER TESTING
-        console.log(currentGame)
+        let p = JSON.parse(currentGame);
+        setCurrentGameDetails(p);
+        setPlayer1Score(p.p1Score);
+        setPlayer2Score(p.p2Score);
+        setCurrentSet(p.currentSet);
+        setIsPlayer1Serving(p.server == 1 ? true : false);
       }
     } catch (e) {
       console.error(e);
