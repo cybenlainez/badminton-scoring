@@ -1,11 +1,27 @@
-import React from 'react';
-import {ScrollView, StatusBar, StyleSheet, Text, View} from 'react-native';
+import React, {useState} from 'react';
+import {
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import Header from '../components/Header';
 import {COLORS, FONTSIZE, SPACING} from '../theme/theme';
 import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
+import {NavArrowRight, NavArrowLeft} from 'iconoir-react-native';
+import Gender from '../components/Gender';
+import Venue from '../components/Venue';
+import Country from '../components/Country';
 
 const Settings = () => {
   const tabBarHeight = useBottomTabBarHeight();
+  const [showList, setShowList] = useState(true);
+  const [showGender, setShowGender] = useState(false);
+  const [showVenue, setShowVenue] = useState(false);
+  const [showCountry, setShowCountry] = useState(false);
+
   return (
     <View style={styles.screenContainer}>
       <StatusBar backgroundColor={COLORS.primaryBlackHex} />
@@ -26,11 +42,112 @@ const Settings = () => {
             />
 
             <View style={styles.content}>
-              <View style={{padding: 10}}>
-                <Text style={styles.title}>Gender</Text>
-                <Text style={styles.title}>Venue</Text>
-                <Text style={styles.title}>Country</Text>
-              </View>
+              {showList && (
+                <View>
+                  <TouchableOpacity
+                    style={styles.item}
+                    onPress={() => {
+                      setShowList(false);
+                      setShowGender(true);
+                    }}>
+                    <Text style={styles.itemText}>Gender</Text>
+                    <NavArrowRight
+                      width={25}
+                      height={25}
+                      strokeWidth={1}
+                      color={COLORS.primaryWhiteRGBA}
+                    />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.item}
+                    onPress={() => {
+                      setShowList(false);
+                      setShowVenue(true);
+                    }}>
+                    <Text style={styles.itemText}>Venue</Text>
+                    <NavArrowRight
+                      width={25}
+                      height={25}
+                      strokeWidth={1}
+                      color={COLORS.primaryWhiteRGBA}
+                    />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.item}
+                    onPress={() => {
+                      setShowList(false);
+                      setShowCountry(true);
+                    }}>
+                    <Text style={styles.itemText}>Country</Text>
+                    <NavArrowRight
+                      width={25}
+                      height={25}
+                      strokeWidth={1}
+                      color={COLORS.primaryWhiteRGBA}
+                    />
+                  </TouchableOpacity>
+                </View>
+              )}
+              {showGender && (
+                <View>
+                  <View style={styles.header}>
+                    <TouchableOpacity
+                      onPress={() => {
+                        setShowList(true);
+                        setShowGender(false);
+                      }}>
+                      <NavArrowLeft
+                        width={25}
+                        height={25}
+                        strokeWidth={1}
+                        color={COLORS.primaryWhiteRGBA}
+                      />
+                    </TouchableOpacity>
+                    <Text style={styles.status}>STATUS</Text>
+                  </View>
+                  <Gender />
+                </View>
+              )}
+              {showVenue && (
+                <View>
+                  <View style={styles.header}>
+                    <TouchableOpacity
+                      onPress={() => {
+                        setShowList(true);
+                        setShowVenue(false);
+                      }}>
+                      <NavArrowLeft
+                        width={25}
+                        height={25}
+                        strokeWidth={1}
+                        color={COLORS.primaryWhiteRGBA}
+                      />
+                    </TouchableOpacity>
+                    <Text style={styles.status}>STATUS</Text>
+                  </View>
+                  <Venue />
+                </View>
+              )}
+              {showCountry && (
+                <View>
+                  <View style={styles.header}>
+                    <TouchableOpacity
+                      onPress={() => {
+                        setShowList(true);
+                        setShowCountry(false);
+                      }}>
+                      <NavArrowLeft
+                        width={25}
+                        height={25}
+                        strokeWidth={1}
+                        color={COLORS.primaryWhiteRGBA}
+                      />
+                    </TouchableOpacity>
+                    <Text style={styles.status}>STATUS</Text>
+                  </View>
+                  <Country />
+                </View>
+              )}
             </View>
           </View>
         </View>
@@ -59,11 +176,31 @@ const styles = StyleSheet.create({
     paddingVertical: SPACING.space_20,
     gap: SPACING.space_15,
   },
-  title: {
+  item: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingTop: SPACING.space_15,
+    paddingLeft: SPACING.space_10,
+    paddingRight: SPACING.space_10,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.quarternaryWhiteRGBA,
+  },
+  itemText: {
     color: COLORS.primaryWhiteHex,
     fontSize: FONTSIZE.size_14,
     marginBottom: SPACING.space_20,
   },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingRight: SPACING.space_10,
+  },
+  status: {
+    color: COLORS.secondaryWhiteRGBA,
+    fontWeight: 'bold',
+    fontSize: FONTSIZE.size_12,
+  }
 });
 
 export default Settings;

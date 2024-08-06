@@ -7,23 +7,25 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useEffect, useState, useCallback} from 'react';
+import React, {useState, useCallback} from 'react';
 import {BORDERRADIUS, COLORS, FONTSIZE, SPACING} from '../theme/theme';
 import Header from '../components/Header';
 import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Dropdown, SelectCountry} from 'react-native-element-dropdown';
 import { countryData } from '../data/countryData';
-import { genderData } from '../data/genderData';
+import { Genders } from '../interfaces/Genders';
+import {useFocusEffect} from '@react-navigation/native';
 
 const Profile = () => {
   const tabBarHeight = useBottomTabBarHeight();
   const [title, setTitle] = useState('');
-  const [country, setCountry] = useState('1');
+  const [country, setCountry] = useState(1);
   const [age, setAge] = useState<number>(0);
   const [ageInputValue, setAgeInputValue] = useState<string>('');
   const [gender, setGender] = useState(null);
   const [bio, setBio] = useState('');
+  const [genders, setGenders] = useState<Genders[]>([]);
 
   const [isFocusGender, setIsFocusGender] = useState(false);
   const [isFocusCountry, setIsFocusCountry] = useState(false);
@@ -77,9 +79,21 @@ const Profile = () => {
     }
   };
 
-  useEffect(() => {
-    getData();
-  }, []);
+  const getGenders = async () => {
+    try {
+      const genders = await AsyncStorage.getItem('genders');
+      setGenders(JSON.parse(genders));
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      getData();
+      getGenders();
+    }, []),
+  );
 
   return (
     <View style={styles.screenContainer}>
@@ -109,13 +123,6 @@ const Profile = () => {
                 onChangeText={value => setTitle(value)}
               />
               <View style={styles.threeColumns}>
-                {/* <TextInput
-                  placeholder="Country"
-                  placeholderTextColor={COLORS.primaryLightGreyHex}
-                  style={styles.input}
-                  value={country}
-                  onChangeText={value => setCountry(value)}
-                /> */}
                 <SelectCountry
                   style={styles.dropdownCountry}
                   containerStyle={styles.containerStyleCountry}
@@ -129,11 +136,11 @@ const Profile = () => {
                   value={country}
                   data={countryData}
                   valueField="value"
-                  labelField="lable"
+                  labelField="label"
                   imageField="image"
                   placeholder={!isFocusCountry ? '' : ''}
                   searchPlaceholder="search..."
-                  onChange={(e: { value: React.SetStateAction<string>; }) => {
+                  onChange={(e: { value: React.SetStateAction<number>; }) => {
                     setCountry(e.value);
                   }}
                 />
@@ -145,20 +152,13 @@ const Profile = () => {
                   onChangeText={setAgeInputValue}
                   keyboardType="numeric"
                 />
-                {/* <TextInput
-                  placeholder="Gender"
-                  placeholderTextColor={COLORS.primaryLightGreyHex}
-                  style={styles.input}
-                  value={gender}
-                  onChangeText={value => setGender(value)}
-                /> */}
                 <Dropdown
                   style={styles.dropdown}
                   placeholderStyle={styles.placeholderStyle}
                   selectedTextStyle={styles.selectedTextStyle}
                   inputSearchStyle={styles.inputSearchStyle}
                   iconStyle={styles.iconStyle}
-                  data={genderData}
+                  data={genders == null ? [] : genders.filter((gender, index) => gender.status === true)}
                   labelField="label"
                   valueField="value"
                   placeholder={!isFocusGender ? 'Gender' : ''}

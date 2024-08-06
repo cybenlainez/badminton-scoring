@@ -22,7 +22,7 @@ import {ScoreDetails} from '../interfaces/ScoreDetails';
 import {useFocusEffect} from '@react-navigation/native';
 import {Dropdown, SelectCountry} from 'react-native-element-dropdown';
 import {countryData} from '../data/countryData';
-import {venueData} from '../data/venueData';
+import { Venues } from '../interfaces/Venues';
 
 const HEIGHT = Dimensions.get('window').height;
 
@@ -46,6 +46,7 @@ const History = ({navigation, route}: any) => {
     p1Set3Score: 0,
     p2Set3Score: 0,
     currentSet: 1,
+    server: 1,
   });
   const tabBarHeight = useBottomTabBarHeight();
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -54,9 +55,10 @@ const History = ({navigation, route}: any) => {
   const [p1B, setP1B] = useState('');
   const [p2A, setP2A] = useState('');
   const [p2B, setP2B] = useState('');
-  const [p1Country, setP1Country] = useState('1');
-  const [p2Country, setP2Country] = useState('1');
+  const [p1Country, setP1Country] = useState(1);
+  const [p2Country, setP2Country] = useState(1);
   const [venue, setVenue] = useState(null);
+  const [venues, setVenues] = useState<Venues[]>([]);
   const [scores, setScores] = useState<ScoreDetails[]>([]);
   const [isFocusVenue, setIsFocusVenue] = useState(false);
 
@@ -65,8 +67,8 @@ const History = ({navigation, route}: any) => {
     setP1B('');
     setP2A('');
     setP2B('');
-    setP1Country('1');
-    setP2Country('1');
+    setP1Country(1);
+    setP2Country(1);
     setVenue(null);
     setIsModalVisible(true);
   };
@@ -86,6 +88,15 @@ const History = ({navigation, route}: any) => {
 
       const currentGame = await AsyncStorage.getItem('currentGame');
       setCurrentGameDetails(JSON.parse(currentGame));
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const getVenues = async () => {
+    try {
+      const venues = await AsyncStorage.getItem('venues');
+      setVenues(JSON.parse(venues));
     } catch (e) {
       console.error(e);
     }
@@ -112,6 +123,7 @@ const History = ({navigation, route}: any) => {
         p1Set3Score: 0,
         p2Set3Score: 0,
         currentSet: 1,
+        server: 1,
       };
 
       await AsyncStorage.setItem('currentGame', JSON.stringify(value));
@@ -130,13 +142,16 @@ const History = ({navigation, route}: any) => {
 
   useFocusEffect(
     useCallback(() => {
+
       // Function to be called every time the screen is focused
       getData();
+      getVenues();
 
       // Clean up function to be called when the screen is unfocused
       return () => {
         // console.log('Home Screen is unfocused');
       };
+
     }, []),
   );
 
@@ -218,10 +233,6 @@ const History = ({navigation, route}: any) => {
                   </View>
                 </View>
                 <View style={styles.inputFlagContainer}>
-                  {/* <Image
-                    style={styles.flag}
-                    source={require('../assets/images/flag-fi-small.png')}
-                  /> */}
                   <SelectCountry
                     style={styles.dropdownCountry}
                     containerStyle={styles.containerStyleCountry}
@@ -235,10 +246,10 @@ const History = ({navigation, route}: any) => {
                     value={p1Country}
                     data={countryData}
                     valueField="value"
-                    labelField="lable"
+                    labelField="label"
                     imageField="image"
                     searchPlaceholder="search..."
-                    onChange={(e: {value: React.SetStateAction<string>}) => {
+                    onChange={(e: {value: React.SetStateAction<number>}) => {
                       setP1Country(e.value);
                     }}
                   />
@@ -280,10 +291,10 @@ const History = ({navigation, route}: any) => {
                     value={p2Country}
                     data={countryData}
                     valueField="value"
-                    labelField="lable"
+                    labelField="label"
                     imageField="image"
                     searchPlaceholder="search..."
-                    onChange={(e: {value: React.SetStateAction<string>}) => {
+                    onChange={(e: {value: React.SetStateAction<number>}) => {
                       setP2Country(e.value);
                     }}
                   />
@@ -311,20 +322,15 @@ const History = ({navigation, route}: any) => {
                   <></>
                 )}
                 <View style={styles.inputFlagContainer}>
-                  {/* <TextInput
-                    placeholder="Venue"
-                    placeholderTextColor={COLORS.primaryLightGreyHex}
-                    style={styles.input}
-                    value={venue}
-                    onChangeText={value => setVenue(value)}
-                  /> */}
                   <Dropdown
+                    // mode='modal'
+                    dropdownPosition='top'
                     style={styles.dropdown}
                     placeholderStyle={styles.placeholderStyle}
                     selectedTextStyle={styles.selectedTextStyle}
                     inputSearchStyle={styles.inputSearchStyle}
                     iconStyle={styles.iconStyle}
-                    data={venueData}
+                    data={venues == null ? [] : venues.filter((venue, index) => venue.status === true).sort((a, b) => a.label.localeCompare(b.label))}
                     labelField="label"
                     valueField="value"
                     placeholder={!isFocusVenue ? 'Select venue' : ''}
