@@ -467,7 +467,7 @@ export const countryData = [
     value: 59,
     label: 'Finland',
     image: {
-      uri: 'https://www.worldometers.info//img/flags/small/tn_fi-flag.gif',
+      uri: 'https://cdn.countryflags.com/thumbs/finland/flag-400.png',
     },
     status: true,
   },

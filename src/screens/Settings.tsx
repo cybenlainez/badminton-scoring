@@ -13,14 +13,12 @@ import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
 import {NavArrowRight, NavArrowLeft} from 'iconoir-react-native';
 import Gender from '../components/Gender';
 import Venue from '../components/Venue';
-import Country from '../components/Country';
 
 const Settings = () => {
   const tabBarHeight = useBottomTabBarHeight();
   const [showList, setShowList] = useState(true);
   const [showGender, setShowGender] = useState(false);
   const [showVenue, setShowVenue] = useState(false);
-  const [showCountry, setShowCountry] = useState(false);
 
   return (
     <View style={styles.screenContainer}>
@@ -72,20 +70,6 @@ const Settings = () => {
                       color={COLORS.primaryWhiteRGBA}
                     />
                   </TouchableOpacity>
-                  <TouchableOpacity
-                    style={styles.item}
-                    onPress={() => {
-                      setShowList(false);
-                      setShowCountry(true);
-                    }}>
-                    <Text style={styles.itemText}>Country</Text>
-                    <NavArrowRight
-                      width={25}
-                      height={25}
-                      strokeWidth={1}
-                      color={COLORS.primaryWhiteRGBA}
-                    />
-                  </TouchableOpacity>
                 </View>
               )}
               {showGender && (
@@ -126,26 +110,6 @@ const Settings = () => {
                     <Text style={styles.status}>STATUS</Text>
                   </View>
                   <Venue />
-                </View>
-              )}
-              {showCountry && (
-                <View>
-                  <View style={styles.header}>
-                    <TouchableOpacity
-                      onPress={() => {
-                        setShowList(true);
-                        setShowCountry(false);
-                      }}>
-                      <NavArrowLeft
-                        width={25}
-                        height={25}
-                        strokeWidth={1}
-                        color={COLORS.primaryWhiteRGBA}
-                      />
-                    </TouchableOpacity>
-                    <Text style={styles.status}>STATUS</Text>
-                  </View>
-                  <Country />
                 </View>
               )}
             </View>

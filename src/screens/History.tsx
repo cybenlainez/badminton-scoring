@@ -330,7 +330,7 @@ const History = ({navigation, route}: any) => {
                     selectedTextStyle={styles.selectedTextStyle}
                     inputSearchStyle={styles.inputSearchStyle}
                     iconStyle={styles.iconStyle}
-                    data={venues == null ? [] : venues.filter((venue, index) => venue.status === true).sort((a, b) => a.label.localeCompare(b.label))}
+                    data={venues == null ? [] : venues.filter((venue, index) => venue.status === true).sort((a, b) => b.label.localeCompare(a.label))}
                     labelField="label"
                     valueField="value"
                     placeholder={!isFocusVenue ? 'Select venue' : ''}
