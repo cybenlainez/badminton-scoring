@@ -17,6 +17,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {format} from 'date-fns';
 import {ScoreDetails} from '../interfaces/ScoreDetails';
 import {countryData} from '../data/countryData';
+import { Teams } from '../interfaces/Teams';
 
 const Score = ({navigation, route}: any) => {
   const [currentGameDetails, setCurrentGameDetails] = useState<ScoreDetails>({
@@ -44,9 +45,10 @@ const Score = ({navigation, route}: any) => {
   const [player1Score, setPlayer1Score] = useState(0);
   const [player2Score, setPlayer2Score] = useState(0);
   const [currentSet, setCurrentSet] = useState(1);
+  const [teams, setTeams] = useState<Teams[]>([]);
 
   const findCountry = (id: string) => {
-    const row = countryData.find((item: any) => item.value === id);
+    const row = teams.concat(countryData).find((item: any) => item.value === id);
     return row
       ? row['image']['uri']
       : 'https://www.worldometers.info//img/flags/small/tn_fi-flag.gif';
@@ -179,7 +181,11 @@ const Score = ({navigation, route}: any) => {
   };
 
   const endGame = async () => {
-    if (currentSet > 3) {
+    if (
+      currentSet > 3 ||
+      (currentGameDetails.p1Set1Score > currentGameDetails.p2Set1Score && currentGameDetails.p1Set2Score > currentGameDetails.p2Set2Score) ||
+      (currentGameDetails.p2Set1Score > currentGameDetails.p1Set1Score && currentGameDetails.p2Set2Score > currentGameDetails.p1Set2Score)
+    ) {
       try {
         const score = await AsyncStorage.getItem('score');
         let newScore = JSON.parse(score);
@@ -242,8 +248,18 @@ const Score = ({navigation, route}: any) => {
     }
   };
 
+  const getTeams = async () => {
+    try {
+      const teams = await AsyncStorage.getItem('teams');
+      setTeams(JSON.parse(teams));
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   useEffect(() => {
     getCurrentData();
+    getTeams();
   }, []);
 
   return (
@@ -307,14 +323,6 @@ const Score = ({navigation, route}: any) => {
                 <View style={styles.row}>
                   <View style={[styles.cell, styles.cellBottomLeft]}>
                     <View style={styles.scoreContainerLeft}>
-                      {/* <View style={styles.scoreButtonsContainer}>
-                            <TouchableOpacity style={styles.plusContainer} onPress={() => {}}>
-                              <Image style={styles.plus} source={require('../assets/images/plus.png')} />
-                            </TouchableOpacity>
-                            <TouchableOpacity style={styles.minusContainer} onPress={() => {}}>
-                              <Image style={styles.minus} source={require('../assets/images/minus.png')} />
-                            </TouchableOpacity>
-                          </View> */}
                       <Text style={[styles.score, styles.scoreLeft]}>
                         {player1Score}
                       </Text>
@@ -336,14 +344,6 @@ const Score = ({navigation, route}: any) => {
                       <Text style={[styles.score, styles.scoreRight]}>
                         {player2Score}
                       </Text>
-                      {/* <View style={styles.scoreButtonsContainer}>
-                            <TouchableOpacity style={styles.plusContainer} onPress={() => {}}>
-                              <Image style={styles.plus} source={require('../assets/images/plus.png')} />
-                            </TouchableOpacity>
-                            <TouchableOpacity style={styles.minusContainer} onPress={() => {}}>
-                              <Image style={styles.minus} source={require('../assets/images/minus.png')} />
-                            </TouchableOpacity>
-                          </View> */}
                     </View>
                     {!isPlayer1Serving ? (
                       <TouchableOpacity

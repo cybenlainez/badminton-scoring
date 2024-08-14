@@ -13,24 +13,24 @@ import React, {useState, useCallback} from 'react';
 import {BORDERRADIUS, COLORS, FONTSIZE, SPACING} from '../theme/theme';
 import {useFocusEffect} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {Venues} from '../interfaces/Venues';
-import VenueItem from './VenueItem';
+import {Teams} from '../interfaces/Teams';
+import TeamItem from './TeamItem';
 
 const HEIGHT = Dimensions.get('window').height;
 
-const Venue = () => {
+const Team = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [venue, setVenue] = useState('');
-  const [venues, setVenues] = useState<Venues[]>([]);
+  const [team, setTeam] = useState('');
+  const [teams, setTeams] = useState<Teams[]>([]);
 
   const handleAdd = () => {
-    setVenue('');
+    setTeam('');
     setIsModalVisible(true);
   };
 
-  const getVenues = async () => {
+  const getTeams = async () => {
     try {
-      const jsonValue = await AsyncStorage.getItem('venues');
+      const jsonValue = await AsyncStorage.getItem('teams');
       return jsonValue != null ? JSON.parse(jsonValue) : [];
     } catch (e) {
       console.error('Error reading value', e);
@@ -38,26 +38,35 @@ const Venue = () => {
   };
 
   const handleSave = async () => {
-    if (venue != '') {
+    if (team != '') {
       try {
-        const venues = await AsyncStorage.getItem('venues');
-        let newVenues = JSON.parse(venues);
+        const teams = await AsyncStorage.getItem('teams');
+        let newTeams = JSON.parse(teams);
+        let id = 1000;
+
+        if (newTeams != null) {
+          id = Math.max(...newTeams.map((item: any) => item.value + 1));
+        }
 
         const value = {
-          label: venue,
-          value: venue,
+          value: id,
+          label: team,
+          image: {
+            uri: 'https://www.creativefabrica.com/wp-content/uploads/2022/08/31/Badminton-Logo-Design-Vector-Icon-Graphics-37468611-1-1-580x387.jpg',
+          },
           status: true,
         };
 
-        if (!Array.isArray(newVenues)) {
-          newVenues = [];
+        if (!Array.isArray(newTeams)) {
+          newTeams = [];
         }
 
-        newVenues.push(value);
+        newTeams.push(value);
 
-        await AsyncStorage.setItem('venues', JSON.stringify(newVenues));
+        // await AsyncStorage.setItem('teams', '');
+        await AsyncStorage.setItem('teams', JSON.stringify(newTeams));
         console.log('Data saved');
-        setVenues(newVenues);
+        setTeams(newTeams);
         setIsModalVisible(false);
       } catch (e) {
         console.error(e);
@@ -65,43 +74,42 @@ const Venue = () => {
     }
   };
 
-  const onEditVenue = async (newData: string, index: number) => {
-    let updatedData = venues;
+  const onEditTeam = async (newData: string, index: number) => {
+    let updatedData = teams;
     updatedData[index].label = newData;
-    updatedData[index].value = newData;
     const jsonValue = JSON.stringify(updatedData);
-    await AsyncStorage.setItem('venues', jsonValue);
-    setVenues(updatedData);
+    await AsyncStorage.setItem('teams', jsonValue);
+    setTeams(updatedData);
   };
 
-  const onToggleVenue = async (status: boolean, index: number) => {
-    let updatedData = venues;
+  const onToggleTeam = async (status: boolean, index: number) => {
+    let updatedData = teams;
     updatedData[index].status = status;
     const jsonValue = JSON.stringify(updatedData);
-    await AsyncStorage.setItem('venues', jsonValue);
-    setVenues(updatedData);
+    await AsyncStorage.setItem('teams', jsonValue);
+    setTeams(updatedData);
   };
 
   useFocusEffect(
     useCallback(() => {
-      async function initializeVenues() {
-        setVenues(await getVenues());
+      async function initializeTeams() {
+        setTeams(await getTeams());
       }
-      initializeVenues();
+      initializeTeams();
     }, []),
   );
 
   return (
     <>
-      {venues != null && (
+      {teams != null && (
         <View style={styles.content}>
-          {venues
+          {teams
             .sort((a, b) => a.label.localeCompare(b.label))
-            .map((data: Venues, index: number) => (
-              <VenueItem
-                venue={data}
-                onToggle={onToggleVenue}
-                onEditVenue={onEditVenue}
+            .map((data: Teams, index: number) => (
+              <TeamItem
+                team={data}
+                onToggle={onToggleTeam}
+                onEditTeam={onEditTeam}
                 index={index}
                 key={index}
               />
@@ -111,7 +119,7 @@ const Venue = () => {
 
       <View style={styles.buttonAddContainer}>
         <TouchableOpacity style={styles.button} onPress={() => handleAdd()}>
-          <Text style={styles.buttonText}>ADD VENUE</Text>
+          <Text style={styles.buttonText}>ADD TEAM</Text>
         </TouchableOpacity>
       </View>
 
@@ -130,11 +138,11 @@ const Venue = () => {
           contentContainerStyle={styles.scrollViewFlex}>
           <View style={styles.modalContent}>
             <TextInput
-              placeholder="Please enter a venue"
+              placeholder="Please enter a team"
               placeholderTextColor={COLORS.primaryLightGreyHex}
               style={styles.input}
-              value={venue}
-              onChangeText={value => setVenue(value)}
+              value={team}
+              onChangeText={value => setTeam(value)}
             />
             <View style={styles.buttonSave}>
               <TouchableOpacity
@@ -223,4 +231,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Venue;
+export default Team;

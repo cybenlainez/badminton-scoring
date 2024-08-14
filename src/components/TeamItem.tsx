@@ -12,37 +12,37 @@ import {
 } from 'react-native';
 import React, {useState} from 'react';
 import {BORDERRADIUS, COLORS, FONTSIZE, SPACING} from '../theme/theme';
-import {Venues} from '../interfaces/Venues';
+import {Teams} from '../interfaces/Teams';
 
 const HEIGHT = Dimensions.get('window').height;
 
-interface VenueItemProps {
-  venue: Venues;
-  onEditVenue: any;
+interface TeamItemProps {
+  team: Teams;
+  onEditTeam: any;
   onToggle: any;
   index: number;
 }
 
-const VenueItem = ({
-  venue,
-  onEditVenue,
+const TeamItem = ({
+  team,
+  onEditTeam,
   onToggle,
   index,
-}: VenueItemProps) => {
-  const [toggleStatus, setToggleStatus] = useState(venue.status);
+}: TeamItemProps) => {
+  const [toggleStatus, setToggleStatus] = useState(team.status);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [newVenue, setNewVenue] = useState('');
+  const [newTeam, setNewTeam] = useState('');
 
-  const handleSelectItem = (venue: string) => {
-    setNewVenue(venue);
+  const handleSelectItem = (team: string) => {
+    setNewTeam(team);
     setIsModalVisible(true);
   };
 
   return (
     <>
-      <TouchableOpacity onPress={() => handleSelectItem(venue.label)}>
+      <TouchableOpacity onPress={() => handleSelectItem(team.label)}>
         <View style={styles.item}>
-          <Text style={styles.itemText}>{venue.label}</Text>
+          <Text style={styles.itemText}>{team.label}</Text>
           <Switch
             value={toggleStatus}
             onValueChange={() => {
@@ -73,17 +73,17 @@ const VenueItem = ({
           contentContainerStyle={styles.scrollViewFlex}>
           <View style={styles.modalContent}>
             <TextInput
-              placeholder="Please enter a venue"
+              placeholder="Please enter a team"
               placeholderTextColor={COLORS.primaryLightGreyHex}
               style={styles.input}
-              value={newVenue}
-              onChangeText={value => setNewVenue(value)}
+              value={newTeam}
+              onChangeText={value => setNewTeam(value)}
             />
             <View style={styles.buttonSave}>
               <TouchableOpacity
                 style={styles.button}
                 onPress={() => {
-                  onEditVenue(newVenue, index);
+                  onEditTeam(newTeam, index);
                   setIsModalVisible(false);
                 }}>
                 <Text style={styles.buttonText}>UPDATE</Text>
@@ -158,4 +158,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default VenueItem;
+export default TeamItem;

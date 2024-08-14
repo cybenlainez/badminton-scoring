@@ -4,6 +4,7 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  ToastAndroid,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -13,12 +14,14 @@ import Header from '../components/Header';
 import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Dropdown, SelectCountry} from 'react-native-element-dropdown';
-import { countryData } from '../data/countryData';
-import { Genders } from '../interfaces/Genders';
+import {countryData} from '../data/countryData';
+import {Genders} from '../interfaces/Genders';
 import {useFocusEffect} from '@react-navigation/native';
 
 const Profile = () => {
   const tabBarHeight = useBottomTabBarHeight();
+  const [uri, setUri] = useState('');
+  const [name, setName] = useState('');
   const [title, setTitle] = useState('');
   const [country, setCountry] = useState(1);
   const [age, setAge] = useState<number>(0);
@@ -40,21 +43,37 @@ const Profile = () => {
 
   const saveData = async () => {
     try {
+      const profile = await AsyncStorage.getItem('profile');
+      let pUri, pName;
+
+      if (profile != null) {
+        let p = JSON.parse(profile);
+        pUri = p.uri;
+        pName = p.name;
+      }
+
       const parsedAgeValue = parseInt(ageInputValue); // Ensure the input value is parsed to a number
+
       if (!isNaN(parsedAgeValue)) {
         setAge(parsedAgeValue);
       }
 
       const value = {
-        name: 'Lassi Haapanen',
+        uri: pUri,
+        name: pName,
         title: title,
         country: country,
-        age: age,
+        age: parsedAgeValue,
         gender: gender,
         biography: bio,
       };
 
       await AsyncStorage.setItem('profile', JSON.stringify(value));
+      ToastAndroid.showWithGravity(
+        `The changes have been saved.`,
+        ToastAndroid.SHORT,
+        ToastAndroid.CENTER,
+      );
       console.log('Data saved');
     } catch (e) {
       console.error(e);
@@ -67,6 +86,8 @@ const Profile = () => {
 
       if (profile != null) {
         let p = JSON.parse(profile);
+        setUri(p.uri);
+        setName(p.name);
         setTitle(p.title);
         setCountry(p.country);
         setAge(p.age);
@@ -140,7 +161,7 @@ const Profile = () => {
                   imageField="image"
                   placeholder={!isFocusCountry ? '' : ''}
                   searchPlaceholder="search..."
-                  onChange={(e: { value: React.SetStateAction<number>; }) => {
+                  onChange={(e: {value: React.SetStateAction<number>}) => {
                     setCountry(e.value);
                   }}
                 />
@@ -158,7 +179,13 @@ const Profile = () => {
                   selectedTextStyle={styles.selectedTextStyle}
                   inputSearchStyle={styles.inputSearchStyle}
                   iconStyle={styles.iconStyle}
-                  data={genders == null ? [] : genders.filter((gender, index) => gender.status === true)}
+                  data={
+                    genders == null
+                      ? []
+                      : genders.filter(
+                          (gender, index) => gender.status === true,
+                        )
+                  }
                   labelField="label"
                   valueField="value"
                   placeholder={!isFocusGender ? 'Gender' : ''}

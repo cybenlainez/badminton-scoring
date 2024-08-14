@@ -1,4 +1,4 @@
-export interface Countries {
+export interface Teams {
   value: number;
   label: string;
   image: {

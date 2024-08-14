@@ -13,12 +13,14 @@ import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
 import {NavArrowRight, NavArrowLeft} from 'iconoir-react-native';
 import Gender from '../components/Gender';
 import Venue from '../components/Venue';
+import Team from '../components/Team';
 
 const Settings = () => {
   const tabBarHeight = useBottomTabBarHeight();
   const [showList, setShowList] = useState(true);
   const [showGender, setShowGender] = useState(false);
   const [showVenue, setShowVenue] = useState(false);
+  const [showTeam, setShowTeam] = useState(false);
 
   return (
     <View style={styles.screenContainer}>
@@ -48,7 +50,7 @@ const Settings = () => {
                       setShowList(false);
                       setShowGender(true);
                     }}>
-                    <Text style={styles.itemText}>Gender</Text>
+                    <Text style={styles.itemText}>Genders</Text>
                     <NavArrowRight
                       width={25}
                       height={25}
@@ -62,7 +64,21 @@ const Settings = () => {
                       setShowList(false);
                       setShowVenue(true);
                     }}>
-                    <Text style={styles.itemText}>Venue</Text>
+                    <Text style={styles.itemText}>Venues</Text>
+                    <NavArrowRight
+                      width={25}
+                      height={25}
+                      strokeWidth={1}
+                      color={COLORS.primaryWhiteRGBA}
+                    />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.item}
+                    onPress={() => {
+                      setShowList(false);
+                      setShowTeam(true);
+                    }}>
+                    <Text style={styles.itemText}>Teams</Text>
                     <NavArrowRight
                       width={25}
                       height={25}
@@ -110,6 +126,26 @@ const Settings = () => {
                     <Text style={styles.status}>STATUS</Text>
                   </View>
                   <Venue />
+                </View>
+              )}
+              {showTeam && (
+                <View>
+                  <View style={styles.header}>
+                    <TouchableOpacity
+                      onPress={() => {
+                        setShowList(true);
+                        setShowTeam(false);
+                      }}>
+                      <NavArrowLeft
+                        width={25}
+                        height={25}
+                        strokeWidth={1}
+                        color={COLORS.primaryWhiteRGBA}
+                      />
+                    </TouchableOpacity>
+                    <Text style={styles.status}>STATUS</Text>
+                  </View>
+                  <Team />
                 </View>
               )}
             </View>

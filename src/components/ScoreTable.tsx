@@ -4,8 +4,11 @@ import {COLORS, FONTSIZE, SPACING} from '../theme/theme';
 import {format} from 'date-fns';
 import {Plus, Minus} from 'iconoir-react-native';
 import {countryData} from '../data/countryData';
+import { Teams } from '../interfaces/Teams';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ScoreTable = ({data, showHeader, defaultVisible}: any) => {
+  const [teams, setTeams] = useState<Teams[]>([]);
   const [toggle, setToggle] = useState(defaultVisible);
 
   const handleToggle = () => {
@@ -13,9 +16,22 @@ const ScoreTable = ({data, showHeader, defaultVisible}: any) => {
   };
   
   const findCountry = (id: string) => {
-    const row = countryData.find((item: any) => item.value === id);
+    const row = teams.concat(countryData).find((item: any) => item.value === id);
     return row ? row['image']['uri'] : 'https://www.worldometers.info//img/flags/small/tn_fi-flag.gif';
   };
+
+  const getTeams = async () => {
+    try {
+      const teams = await AsyncStorage.getItem('teams');
+      setTeams(JSON.parse(teams));
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  useEffect(() => {
+    getTeams();
+  }, []);
 
   return (
     <>

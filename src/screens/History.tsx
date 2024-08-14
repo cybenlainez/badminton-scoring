@@ -22,7 +22,8 @@ import {ScoreDetails} from '../interfaces/ScoreDetails';
 import {useFocusEffect} from '@react-navigation/native';
 import {Dropdown, SelectCountry} from 'react-native-element-dropdown';
 import {countryData} from '../data/countryData';
-import { Venues } from '../interfaces/Venues';
+import {Venues} from '../interfaces/Venues';
+import { Teams } from '../interfaces/Teams';
 
 const HEIGHT = Dimensions.get('window').height;
 
@@ -59,6 +60,7 @@ const History = ({navigation, route}: any) => {
   const [p2Country, setP2Country] = useState(1);
   const [venue, setVenue] = useState(null);
   const [venues, setVenues] = useState<Venues[]>([]);
+  const [teams, setTeams] = useState<Teams[]>([]);
   const [scores, setScores] = useState<ScoreDetails[]>([]);
   const [isFocusVenue, setIsFocusVenue] = useState(false);
 
@@ -85,7 +87,7 @@ const History = ({navigation, route}: any) => {
     try {
       const score = await AsyncStorage.getItem('score');
       setScores(JSON.parse(score));
-
+      
       const currentGame = await AsyncStorage.getItem('currentGame');
       setCurrentGameDetails(JSON.parse(currentGame));
     } catch (e) {
@@ -97,6 +99,15 @@ const History = ({navigation, route}: any) => {
     try {
       const venues = await AsyncStorage.getItem('venues');
       setVenues(JSON.parse(venues));
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const getTeams = async () => {
+    try {
+      const teams = await AsyncStorage.getItem('teams');
+      setTeams(JSON.parse(teams));
     } catch (e) {
       console.error(e);
     }
@@ -142,16 +153,15 @@ const History = ({navigation, route}: any) => {
 
   useFocusEffect(
     useCallback(() => {
-
       // Function to be called every time the screen is focused
       getData();
       getVenues();
+      getTeams();
 
       // Clean up function to be called when the screen is unfocused
       return () => {
         // console.log('Home Screen is unfocused');
       };
-
     }, []),
   );
 
@@ -178,7 +188,9 @@ const History = ({navigation, route}: any) => {
                 <View style={styles.currentGameContainer}>
                   <TouchableOpacity
                     style={styles.buttonCurrentGame}
-                    onPress={() => {handleCurrentGame()}}>
+                    onPress={() => {
+                      handleCurrentGame();
+                    }}>
                     <Text style={styles.buttonTextCurrentGame}>
                       ON-GOING GAME
                     </Text>
@@ -244,7 +256,7 @@ const History = ({navigation, route}: any) => {
                     search
                     maxHeight={300}
                     value={p1Country}
-                    data={countryData}
+                    data={teams != null ? teams.filter((venue, index) => venue.status === true).concat(countryData) : countryData}
                     valueField="value"
                     labelField="label"
                     imageField="image"
@@ -289,7 +301,7 @@ const History = ({navigation, route}: any) => {
                     search
                     maxHeight={300}
                     value={p2Country}
-                    data={countryData}
+                    data={teams != null ? teams.filter((venue, index) => venue.status === true).concat(countryData) : countryData}
                     valueField="value"
                     labelField="label"
                     imageField="image"
@@ -324,13 +336,19 @@ const History = ({navigation, route}: any) => {
                 <View style={styles.inputFlagContainer}>
                   <Dropdown
                     // mode='modal'
-                    dropdownPosition='top'
+                    dropdownPosition="top"
                     style={styles.dropdown}
                     placeholderStyle={styles.placeholderStyle}
                     selectedTextStyle={styles.selectedTextStyle}
                     inputSearchStyle={styles.inputSearchStyle}
                     iconStyle={styles.iconStyle}
-                    data={venues == null ? [] : venues.filter((venue, index) => venue.status === true).sort((a, b) => b.label.localeCompare(a.label))}
+                    data={
+                      venues == null
+                        ? []
+                        : venues
+                            .filter((venue, index) => venue.status === true)
+                            .sort((a, b) => b.label.localeCompare(a.label))
+                    }
                     labelField="label"
                     valueField="value"
                     placeholder={!isFocusVenue ? 'Select venue' : ''}

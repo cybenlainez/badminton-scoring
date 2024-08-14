@@ -1,12 +1,14 @@
-import {Image, StyleSheet, Text, View} from 'react-native';
+import {Image, StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {Dropdown} from 'react-native-element-dropdown';
 import {Reports, Presentation, Star, XmarkCircle} from 'iconoir-react-native';
 import {BORDERRADIUS, COLORS, FONTSIZE, SPACING} from '../theme/theme';
+import LinearGradient from 'react-native-linear-gradient';
 
 const PlayerStats = ({data, playerData}: any) => {
   const [isFocusPlayer, setIsFocusPlayer] = useState(false);
-
+  const [playerInitial, setPlayerInitial] = useState('');
+  
   const [player, setPlayer] = useState<any>({
     count: 0,
     frontColor: '',
@@ -34,6 +36,11 @@ const PlayerStats = ({data, playerData}: any) => {
   // select player
   const getSinglePlayerStats = (name: any) => {
     setPlayer(data.find((item: any) => item.player === name));
+
+    // get first letter of name
+    const str = (data.find((item: any) => item.player === name).player);
+    const firstLetter = str.length > 0 ? str[0] : undefined;
+    setPlayerInitial(firstLetter);
   };
 
   useEffect(() => {
@@ -43,10 +50,17 @@ const PlayerStats = ({data, playerData}: any) => {
   return playerData.length > 0 ? (
     <View>
       <View style={styles.nameContainer}>
-        <Image
+        {/* <Image
           style={styles.avatar}
           source={require('../assets/images/avatar.png')}
-        />
+        /> */}
+        <LinearGradient
+          colors={['#00E1AB', '#086AB0']}
+          start={{x: 0, y: 0}}
+          end={{x: 1, y: 1}}
+          style={styles.avatar}>
+          <Text style={styles.avatarText}>{playerInitial}</Text>
+        </LinearGradient>
         <Dropdown
           style={styles.dropdown}
           placeholderStyle={styles.placeholderStyle}
@@ -69,66 +83,68 @@ const PlayerStats = ({data, playerData}: any) => {
         />
       </View>
       <View style={styles.detailsContainer}>
-        <View style={styles.detailContainer}>
-          <View style={styles.infoContainer}>
-            <Text
-              style={[
-                styles.detail,
-                {
-                  color:
-                    player.winningPercentage * 100 >= 50
-                      ? COLORS.primaryGreenHex
-                      : COLORS.primaryYellowHex,
-                },
-              ]}>
-              {player.winningPercentage * 100}%
-            </Text>
-            <Text style={styles.detailTitle}>WIN RATE</Text>
+        <View style={styles.rowContainer}>
+          <View style={styles.itemContainer}>
+            <View style={styles.infoContainer}>
+              <Text
+                style={[
+                  styles.detail,
+                  {
+                    color:
+                      player.winningPercentage * 100 >= 50
+                        ? COLORS.primaryGreenHex
+                        : COLORS.primaryYellowHex,
+                  },
+                ]}>
+                {player.winningPercentage * 100}%
+              </Text>
+              <Text style={styles.detailTitle}>WIN RATE</Text>
+            </View>
+            <Reports
+              width={20}
+              height={20}
+              strokeWidth={1}
+              color={COLORS.primaryWhiteRGBA}
+            />
           </View>
-          <Reports
-            width={20}
-            height={20}
-            strokeWidth={1}
-            color={COLORS.primaryWhiteRGBA}
-          />
+          <View style={styles.itemContainer}>
+            <View style={styles.infoContainer}>
+              <Text style={styles.detail}>{player.count}</Text>
+              <Text style={styles.detailTitle}>TOTAL GAMES</Text>
+            </View>
+            <Presentation
+              width={20}
+              height={20}
+              strokeWidth={1}
+              color={COLORS.primaryWhiteRGBA}
+            />
+          </View>
         </View>
-        <View style={styles.detailContainer}>
-          <View style={styles.infoContainer}>
-            <Text style={styles.detail}>{player.count}</Text>
-            <Text style={styles.detailTitle}>TOTAL GAMES</Text>
+        <View style={styles.rowContainer}>
+          <View style={styles.itemContainer}>
+            <View style={styles.infoContainer}>
+              <Text style={styles.detail}>{player.totalWins}</Text>
+              <Text style={styles.detailTitle}>WINS</Text>
+            </View>
+            <Star
+              width={20}
+              height={20}
+              strokeWidth={1}
+              color={COLORS.primaryWhiteRGBA}
+            />
           </View>
-          <Presentation
-            width={20}
-            height={20}
-            strokeWidth={1}
-            color={COLORS.primaryWhiteRGBA}
-          />
-        </View>
-      </View>
-      <View style={styles.detailsContainer}>
-        <View style={styles.detailContainer}>
-          <View style={styles.infoContainer}>
-            <Text style={styles.detail}>{player.totalWins}</Text>
-            <Text style={styles.detailTitle}>WINS</Text>
+          <View style={styles.itemContainer}>
+            <View style={styles.infoContainer}>
+              <Text style={styles.detail}>{player.totalLosses}</Text>
+              <Text style={styles.detailTitle}>LOSSES</Text>
+            </View>
+            <XmarkCircle
+              width={20}
+              height={20}
+              strokeWidth={1}
+              color={COLORS.primaryWhiteRGBA}
+            />
           </View>
-          <Star
-            width={20}
-            height={20}
-            strokeWidth={1}
-            color={COLORS.primaryWhiteRGBA}
-          />
-        </View>
-        <View style={styles.detailContainer}>
-          <View style={styles.infoContainer}>
-            <Text style={styles.detail}>{player.totalLosses}</Text>
-            <Text style={styles.detailTitle}>LOSSES</Text>
-          </View>
-          <XmarkCircle
-            width={20}
-            height={20}
-            strokeWidth={1}
-            color={COLORS.primaryWhiteRGBA}
-          />
         </View>
       </View>
     </View>
@@ -146,12 +162,24 @@ const styles = StyleSheet.create({
   avatar: {
     height: 150,
     width: 150,
+    borderRadius: 100,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  avatarText: {
+    fontSize: FONTSIZE.size_100,
+    fontWeight: 'bold',
+    color: COLORS.primaryWhiteHex,
   },
   detailsContainer: {
+    justifyContent: 'space-between',
+    gap: SPACING.space_14,
+  },
+  rowContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-  detailContainer: {
+  itemContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     borderWidth: 1,
@@ -198,12 +226,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.quarternaryWhiteRGBA,
     borderRadius: BORDERRADIUS.radius_5,
-    paddingRight: SPACING.space_10,
-    paddingLeft: SPACING.space_15,
+    paddingRight: SPACING.space_15,
+    paddingLeft: SPACING.space_20,
     fontSize: FONTSIZE.size_14,
     textAlignVertical: 'top',
-    height: 40,
-    width: 130,
+    height: 50,
+    width: 200,
   },
   placeholderStyle: {
     fontSize: FONTSIZE.size_14,

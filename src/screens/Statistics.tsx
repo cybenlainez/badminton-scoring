@@ -1,11 +1,12 @@
 import {ScrollView, StatusBar, StyleSheet, View} from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useCallback} from 'react';
 import {COLORS, SPACING} from '../theme/theme';
 import Header from '../components/Header';
 import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AllPlayersChart from '../components/AllPlayersChart';
 import PlayerStats from '../components/PlayerStats';
+import {useFocusEffect} from '@react-navigation/native';
 
 const Statistics = () => {
   const tabBarHeight = useBottomTabBarHeight();
@@ -180,9 +181,11 @@ const Statistics = () => {
     }
   };
 
-  useEffect(() => {
-    getData();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      getData();
+    }, []),
+  );
 
   return (
     <View style={styles.screenContainer}>

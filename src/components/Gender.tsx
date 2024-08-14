@@ -30,44 +30,64 @@ const Gender = () => {
 
   const getGenders = async () => {
     try {
-      const genders = await AsyncStorage.getItem('genders');
-      setGenders(JSON.parse(genders));
+      const jsonValue = await AsyncStorage.getItem('genders');
+      return jsonValue != null ? JSON.parse(jsonValue) : [];
     } catch (e) {
-      console.error(e);
+      console.error('Error reading value', e);
     }
   };
-  
+
   const handleSave = async () => {
     if (gender != '') {
       try {
         const genders = await AsyncStorage.getItem('genders');
         let newGenders = JSON.parse(genders);
-  
+
         const value = {
           label: gender,
           value: gender,
           status: true,
         };
-  
+
         if (!Array.isArray(newGenders)) {
           newGenders = [];
         }
-  
+
         newGenders.push(value);
-  
+
         await AsyncStorage.setItem('genders', JSON.stringify(newGenders));
         console.log('Data saved');
-        getGenders();
+        setGenders(newGenders);
         setIsModalVisible(false);
       } catch (e) {
         console.error(e);
       }
     }
   };
+  
+  const onEditGender = async (newData: string, index: number) => {
+    let updatedData = genders;
+    updatedData[index].label = newData;
+    updatedData[index].value = newData;
+    const jsonValue = JSON.stringify(updatedData);
+    await AsyncStorage.setItem('genders', jsonValue);
+    setGenders(updatedData);
+  };
+
+  const onToggleGender = async (status: boolean, index: number) => {
+    let updatedData = genders;
+    updatedData[index].status = status;
+    const jsonValue = JSON.stringify(updatedData);
+    await AsyncStorage.setItem('genders', jsonValue);
+    setGenders(updatedData);
+  };
 
   useFocusEffect(
     useCallback(() => {
-      getGenders();
+      async function initializeGenders() {
+        setGenders(await getGenders());
+      }
+      initializeGenders();
     }, []),
   );
 
@@ -75,19 +95,25 @@ const Gender = () => {
     <>
       {genders != null && (
         <View style={styles.content}>
-          {genders.map((data: any, index: number) => (
-            <GenderItem key={data.label} data={data} />
+          {genders.map((data: Genders, index: number) => (
+            <GenderItem
+              gender={data}
+              onToggle={onToggleGender}
+              onEditGender={onEditGender}
+              index={index}
+              key={index}
+            />
           ))}
         </View>
       )}
-      
+
       <View style={styles.buttonAddContainer}>
         <TouchableOpacity style={styles.button} onPress={() => handleAdd()}>
           <Text style={styles.buttonText}>ADD GENDER</Text>
         </TouchableOpacity>
       </View>
 
-      {/* players info modal */}
+      {/* gender modal */}
       <Modal
         visible={isModalVisible}
         onRequestClose={() => setIsModalVisible(false)}
@@ -109,7 +135,9 @@ const Gender = () => {
               onChangeText={value => setGender(value)}
             />
             <View style={styles.buttonSave}>
-              <TouchableOpacity style={styles.button} onPress={() => handleSave()}>
+              <TouchableOpacity
+                style={styles.button}
+                onPress={() => handleSave()}>
                 <Text style={styles.buttonText}>SAVE</Text>
               </TouchableOpacity>
             </View>

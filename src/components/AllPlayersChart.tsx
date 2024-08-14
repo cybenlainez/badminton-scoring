@@ -1,6 +1,6 @@
 import {StyleSheet, Text, View} from 'react-native';
 import React from 'react';
-import {COLORS, FONTSIZE} from '../theme/theme';
+import {COLORS, FONTSIZE, SPACING} from '../theme/theme';
 import {BarChart} from 'react-native-gifted-charts';
 
 const AllPlayersChart = ({data}: any) => {
@@ -24,9 +24,7 @@ const AllPlayersChart = ({data}: any) => {
 
   return data.length > 0 ? (
     <View style={styles.barChartContainer}>
-      {/* <View style={{padding: 10}}>
-          <Text style={styles.title}>Lassi vs one (1) player</Text>
-          <LineChart
+      {/* <LineChart
             width={255}
             areaChart
             curved
@@ -92,9 +90,9 @@ const AllPlayersChart = ({data}: any) => {
                 );
               },
             }}
-          />
-        </View> */}
-      <BarChart
+          /> */}
+
+      {/* <BarChart
         data={data}
         barWidth={17}
         initialSpacing={5}
@@ -147,8 +145,21 @@ const AllPlayersChart = ({data}: any) => {
             </View>
           );
         }}
-      />
+      /> */}
+
       <Text style={styles.title}>ALL PLAYERS WIN RATES</Text>
+
+      {data
+        .sort((a: any, b: any) => a.player.localeCompare(b.player))
+        .map((item: any, index: any) => (
+          <View key={item.player} style={styles.item}>
+            <View style={styles.playerNameCount}>
+              <Text style={styles.itemPlayerText}>{item.player}</Text>
+              <Text style={styles.itemCountText}>{item.count} total games</Text>
+            </View>
+            <Text style={styles.itemWinRateText}>{item.winningPercentage * 100}%</Text>
+          </View>
+        ))}
     </View>
   ) : (
     <></>
@@ -158,12 +169,41 @@ const AllPlayersChart = ({data}: any) => {
 const styles = StyleSheet.create({
   barChartContainer: {
     padding: 10,
-    alignItems: 'center',
-    margin: 'auto',
+    // alignItems: 'center',
+    // margin: 'auto',
   },
   title: {
     color: COLORS.primaryWhiteRGBA,
-    fontSize: FONTSIZE.size_11,
+    fontSize: FONTSIZE.size_12,
+    marginBottom: SPACING.space_10,
+  },
+  content: {
+    padding: SPACING.space_10,
+  },
+  playerNameCount: {
+    flexDirection: 'column',
+  },
+  item: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingTop: SPACING.space_15,
+    paddingBottom: SPACING.space_15,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.quarternaryWhiteRGBA,
+  },
+  itemPlayerText: {
+    color: COLORS.primaryWhiteHex,
+    fontSize: FONTSIZE.size_14,
+  },
+  itemCountText: {
+    color: COLORS.primaryWhiteRGBA,
+    fontSize: FONTSIZE.size_12,
+  },
+  itemWinRateText: {
+    color: COLORS.primaryWhiteHex,
+    fontSize: FONTSIZE.size_16,
+    fontWeight: 'bold',
   },
 });
 
