@@ -50,6 +50,7 @@ const History = ({navigation, route}: any) => {
     server: 1,
   });
   const tabBarHeight = useBottomTabBarHeight();
+  const [name, setName] = useState('');
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [mode, setMode] = useState(false);
   const [p1A, setP1A] = useState('');
@@ -85,6 +86,13 @@ const History = ({navigation, route}: any) => {
 
   const getData = async () => {
     try {
+      const profile = await AsyncStorage.getItem('profile');
+
+      if (profile != null) {
+        let p = JSON.parse(profile);
+        setName(p.name);
+      }
+
       const score = await AsyncStorage.getItem('score');
       setScores(JSON.parse(score));
       
@@ -177,7 +185,7 @@ const History = ({navigation, route}: any) => {
             <Header
               time={false}
               icon={false}
-              title="Welcome Lassi!"
+              title={name != null ? 'Welcome ' + name + '!' : 'Welcome!'}
               subtitle="It requires control, strength & measured movement."
               isProfile={false}
               isBack={false}

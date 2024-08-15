@@ -4,7 +4,7 @@ import {COLORS, FONTSIZE, SPACING} from '../theme/theme';
 import {format} from 'date-fns';
 import {Plus, Minus} from 'iconoir-react-native';
 import {countryData} from '../data/countryData';
-import { Teams } from '../interfaces/Teams';
+import {Teams} from '../interfaces/Teams';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ScoreTable = ({data, showHeader, defaultVisible}: any) => {
@@ -14,10 +14,15 @@ const ScoreTable = ({data, showHeader, defaultVisible}: any) => {
   const handleToggle = () => {
     setToggle(!toggle);
   };
-  
+
   const findCountry = (id: string) => {
-    const row = teams.concat(countryData).find((item: any) => item.value === id);
-    return row ? row['image']['uri'] : 'https://www.worldometers.info//img/flags/small/tn_fi-flag.gif';
+    const row =
+      teams != null
+        ? teams.concat(countryData).find((item: any) => item.value === id)
+        : countryData.find((item: any) => item.value === id);
+    return row
+      ? row['image']['uri']
+      : 'https://www.worldometers.info//img/flags/small/tn_fi-flag.gif';
   };
 
   const getTeams = async () => {
@@ -82,7 +87,7 @@ const ScoreTable = ({data, showHeader, defaultVisible}: any) => {
             <View style={[styles.cellLong, styles.cellLongPlayer1]}>
               <Image
                 style={styles.flagSmall}
-                source={{ uri: findCountry(data.p1Country) }}
+                source={{uri: findCountry(data.p1Country)}}
               />
               <View style={styles.nameContainer}>
                 <Text style={styles.name}>{data.p1A}</Text>
@@ -127,7 +132,7 @@ const ScoreTable = ({data, showHeader, defaultVisible}: any) => {
             <View style={[styles.cellLong, styles.cellLongPlayer2]}>
               <Image
                 style={styles.flagSmall}
-                source={{ uri: findCountry(data.p2Country) }}
+                source={{uri: findCountry(data.p2Country)}}
               />
               <View style={styles.nameContainer}>
                 <Text style={styles.name}>{data.p2A}</Text>

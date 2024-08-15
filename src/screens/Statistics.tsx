@@ -1,4 +1,4 @@
-import {ScrollView, StatusBar, StyleSheet, View} from 'react-native';
+import {ScrollView, StatusBar, StyleSheet, Text, View} from 'react-native';
 import React, {useEffect, useState, useCallback} from 'react';
 import {COLORS, SPACING} from '../theme/theme';
 import Header from '../components/Header';
@@ -12,6 +12,7 @@ const Statistics = () => {
   const tabBarHeight = useBottomTabBarHeight();
   const [distinctData, setDistinctData] = useState<any[]>([]);
   const [playerData, setPlayerData] = useState<any[]>([]);
+  const [noData, setNoData] = useState<boolean>(false);
 
   const getWinOrLose = (
     p1Set1Score: any,
@@ -143,39 +144,47 @@ const Statistics = () => {
     try {
       const score = await AsyncStorage.getItem('score');
 
-      // generate win/lose
-      const generateWinner = JSON.parse(score).map((player: any) => ({
-        ...player,
-        winner: getWinOrLose(
-          player.p1Set1Score,
-          player.p2Set1Score,
-          player.p1Set2Score,
-          player.p2Set2Score,
-          player.p1Set3Score,
-          player.p2Set3Score,
-        ),
-      }));
+      if (score != null) {
+        // generate win/lose
+        const generateWinner = JSON.parse(score).map((player: any) => ({
+          ...player,
+          winner: getWinOrLose(
+            player.p1Set1Score,
+            player.p2Set1Score,
+            player.p1Set2Score,
+            player.p2Set2Score,
+            player.p1Set3Score,
+            player.p2Set3Score,
+          ),
+        }));
 
-      // transpose
-      const columnsToTranspose = ['p1A', 'p1B', 'p2A', 'p2B'];
-      const transformedData = transformData(generateWinner, columnsToTranspose);
+        // transpose
+        const columnsToTranspose = ['p1A', 'p1B', 'p2A', 'p2B'];
+        const transformedData = transformData(
+          generateWinner,
+          columnsToTranspose,
+        );
 
-      // get distinct players
-      const distinctDataTmp = getDistinctData(transformedData);
+        // get distinct players
+        const distinctDataTmp = getDistinctData(transformedData);
 
-      // get players
-      let players = distinctDataTmp.map((item: any) => item.player);
+        // get players
+        let players = distinctDataTmp.map((item: any) => item.player);
 
-      players = players.filter(
-        (player: any, index: any) => players.indexOf(player) === index,
-      );
+        players = players.filter(
+          (player: any, index: any) => players.indexOf(player) === index,
+        );
 
-      let newPlayerData = players
-        .map((item: any) => ({label: item, value: item}))
-        .sort((a: any, b: any) => a.label.localeCompare(b.label));
+        let newPlayerData = players
+          .map((item: any) => ({label: item, value: item}))
+          .sort((a: any, b: any) => a.label.localeCompare(b.label));
 
-      setDistinctData(distinctDataTmp);
-      setPlayerData(newPlayerData);
+        setDistinctData(distinctDataTmp);
+        setPlayerData(newPlayerData);
+        setNoData(false);
+      } else {
+        setNoData(true);
+      }
     } catch (e) {
       console.error(e);
     }
@@ -212,6 +221,10 @@ const Statistics = () => {
               )}
               <AllPlayersChart data={distinctData} />
             </View>
+
+            {noData && (
+              <Text style={styles.noData}>No any records of game found.</Text>
+            )}
           </View>
         </View>
       </ScrollView>
@@ -242,6 +255,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  noData: {
+    color: COLORS.secondaryWhiteRGBA,
+    margin: 'auto',
   },
 });
 

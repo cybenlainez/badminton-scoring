@@ -48,7 +48,10 @@ const Score = ({navigation, route}: any) => {
   const [teams, setTeams] = useState<Teams[]>([]);
 
   const findCountry = (id: string) => {
-    const row = teams.concat(countryData).find((item: any) => item.value === id);
+    const row =
+      teams != null
+        ? teams.concat(countryData).find((item: any) => item.value === id)
+        : countryData.find((item: any) => item.value === id);
     return row
       ? row['image']['uri']
       : 'https://www.worldometers.info//img/flags/small/tn_fi-flag.gif';

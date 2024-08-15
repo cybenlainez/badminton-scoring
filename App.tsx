@@ -7,7 +7,7 @@ import StatisticsScreen from './src/screens/Statistics'
 import ScoreScreen from './src/screens/Score'
 import ProfileScreen from './src/screens/Profile'
 import SettingsScreen from './src/screens/Settings'
-// import SplashScreen from 'react-native-splash-screen'
+import SplashScreen from 'react-native-splash-screen'
 import { Provider } from 'react-redux'
 import { store } from './src/store/store'
 
@@ -15,9 +15,9 @@ const Stack = createNativeStackNavigator()
 
 const App = () => {
 
-  // useEffect(() => {
-  //   SplashScreen.hide()
-  // }, [])
+  useEffect(() => {
+    SplashScreen.hide()
+  }, [])
 
   return (
     <Provider store={store}>

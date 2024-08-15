@@ -44,12 +44,11 @@ const Profile = () => {
   const saveData = async () => {
     try {
       const profile = await AsyncStorage.getItem('profile');
-      let pUri, pName;
+      let pUri;
 
       if (profile != null) {
         let p = JSON.parse(profile);
         pUri = p.uri;
-        pName = p.name;
       }
 
       const parsedAgeValue = parseInt(ageInputValue); // Ensure the input value is parsed to a number
@@ -60,7 +59,7 @@ const Profile = () => {
 
       const value = {
         uri: pUri,
-        name: pName,
+        name: name,
         title: title,
         country: country,
         age: parsedAgeValue,
@@ -128,14 +127,21 @@ const Profile = () => {
             <Header
               time={false}
               icon={false}
-              title="Lassi Haapanen"
-              subtitle="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod."
+              title={name == '' ? '(enter your name)' : name}
+              subtitle={title == '' ? '(enter your title/description)' : title}
               isProfile={true}
               isBack={true}
               isSettings={true}
             />
 
             <View style={styles.content}>
+              <TextInput
+                placeholder="Name"
+                placeholderTextColor={COLORS.primaryLightGreyHex}
+                style={styles.input}
+                value={name}
+                onChangeText={value => setName(value)}
+              />
               <TextInput
                 placeholder="Title"
                 placeholderTextColor={COLORS.primaryLightGreyHex}
@@ -203,7 +209,7 @@ const Profile = () => {
               <TextInput
                 editable
                 multiline
-                numberOfLines={10}
+                numberOfLines={9}
                 placeholder="Biography"
                 placeholderTextColor={COLORS.primaryLightGreyHex}
                 style={styles.input}

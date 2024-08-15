@@ -115,6 +115,16 @@ const Header: React.FC<HeaderProps> = ({
     useCallback(() => {
       getData();
 
+
+
+
+
+      // CYHERE - calculate correct duration
+
+
+
+      
+
       // time
       let interval: any = null;
 
@@ -174,12 +184,10 @@ const Header: React.FC<HeaderProps> = ({
         </View>
         {isProfile ? (
           <View style={styles.profileContainer}>
-            {/* <Image source={require('../assets/images/avatar.png')} /> */}
-
             <TouchableOpacity onPress={selectImage}>
               <Image
                 source={
-                  uri ? {uri: uri} : require('../assets/images/avatar.png') // Replace with your default image
+                  uri ? {uri: uri} : require('../assets/images/avatar.png')
                 }
                 style={styles.avatar}
               />
@@ -194,9 +202,12 @@ const Header: React.FC<HeaderProps> = ({
                   ]}>
                   {title}
                 </Text>
-                <TouchableOpacity onPress={() => {}}>
+                {/* <TouchableOpacity
+                  onPress={() => {
+                    handleEditName();
+                  }}>
                   <Image source={require('../assets/images/pencil.png')} />
-                </TouchableOpacity>
+                </TouchableOpacity> */}
               </View>
               <Text style={styles.headerSubtitle}>{subtitle}</Text>
               <View style={styles.verifyContainer}>
