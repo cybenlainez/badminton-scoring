@@ -55,7 +55,8 @@ const PlayerStats = ({data, playerData}: any) => {
           source={require('../assets/images/avatar.png')}
         /> */}
         <LinearGradient
-          colors={['#00E1AB', '#086AB0']}
+          // colors={['#00E1AB', '#086AB0']}
+          colors={[COLORS.tertiaryWhiteRGBA, COLORS.quarternaryWhiteRGBA]}
           start={{x: 0, y: 0}}
           end={{x: 1, y: 1}}
           style={styles.avatar}>

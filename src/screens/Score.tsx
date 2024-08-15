@@ -9,7 +9,7 @@ import {
   Image,
   ToastAndroid,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {BORDERRADIUS, COLORS, FONTSIZE, SPACING} from '../theme/theme';
 import Header from '../components/Header';
 import ScoreSummary from '../components/ScoreSummary';
@@ -18,6 +18,7 @@ import {format} from 'date-fns';
 import {ScoreDetails} from '../interfaces/ScoreDetails';
 import {countryData} from '../data/countryData';
 import { Teams } from '../interfaces/Teams';
+import {useFocusEffect} from '@react-navigation/native';
 
 const Score = ({navigation, route}: any) => {
   const [currentGameDetails, setCurrentGameDetails] = useState<ScoreDetails>({
@@ -41,6 +42,8 @@ const Score = ({navigation, route}: any) => {
     currentSet: 1,
     server: 1,
   });
+  const [duration, setDuration] = useState(0);
+  const [isRunning, setIsRunning] = useState(true);
   const [isPlayer1Serving, setIsPlayer1Serving] = useState(true);
   const [player1Score, setPlayer1Score] = useState(0);
   const [player2Score, setPlayer2Score] = useState(0);
@@ -99,7 +102,7 @@ const Score = ({navigation, route}: any) => {
     try {
       const value: ScoreDetails = {
         date: new Date(),
-        duration: 0,
+        duration: duration,
         venue: currentGameDetails.venue,
         p1A: currentGameDetails.p1A,
         p1B: currentGameDetails.p1B,
@@ -128,6 +131,8 @@ const Score = ({navigation, route}: any) => {
   };
 
   const handleReset = () => {
+    setIsRunning(true);
+    setDuration(0);
     setPlayer1Score(0);
     setPlayer2Score(0);
     setIsPlayer1Serving(true);
@@ -137,7 +142,7 @@ const Score = ({navigation, route}: any) => {
     try {
       const value: ScoreDetails = {
         date: new Date(),
-        duration: 0,
+        duration: currentGameDetails.duration,
         venue: currentGameDetails.venue,
         p1A: currentGameDetails.p1A,
         p1B: currentGameDetails.p1B,
@@ -195,7 +200,7 @@ const Score = ({navigation, route}: any) => {
 
         const value = {
           date: Date.now(),
-          duration: 0,
+          duration: currentGameDetails.duration,
           venue: currentGameDetails.venue,
           p1A: currentGameDetails.p1A,
           p1B: currentGameDetails.p1B,
@@ -245,6 +250,7 @@ const Score = ({navigation, route}: any) => {
         setPlayer2Score(p.p2Score);
         setCurrentSet(p.currentSet);
         setIsPlayer1Serving(p.server == 1 ? true : false);
+        setDuration(p.duration);
       }
     } catch (e) {
       console.error(e);
@@ -260,10 +266,25 @@ const Score = ({navigation, route}: any) => {
     }
   };
 
-  useEffect(() => {
-    getCurrentData();
-    getTeams();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      getCurrentData();
+      getTeams();
+      
+      // time
+      let interval: any = null;
+
+      if (isRunning) {
+        interval = setInterval(() => {
+          setDuration(prevTime => prevTime + 1);
+        }, 1000); // Increment time by 1 second
+      } else if (!isRunning && duration !== 0) {
+        clearInterval(interval);
+      }
+
+      return () => clearInterval(interval);
+    }, [isRunning]),
+  );
 
   return (
     <View style={styles.screenContainer}>
@@ -281,6 +302,7 @@ const Score = ({navigation, route}: any) => {
               isProfile={false}
               isBack={true}
               isSettings={true}
+              duration={duration}
             />
 
             <View style={styles.content}>
@@ -332,6 +354,7 @@ const Score = ({navigation, route}: any) => {
                     </View>
                     {isPlayer1Serving ? (
                       <TouchableOpacity
+                        disabled={isRunning ? false : true}
                         style={styles.shuttle}
                         onPress={() => handleChangeFavor()}>
                         <Image
@@ -350,6 +373,7 @@ const Score = ({navigation, route}: any) => {
                     </View>
                     {!isPlayer1Serving ? (
                       <TouchableOpacity
+                        disabled={isRunning ? false : true}
                         style={styles.shuttle}
                         onPress={() => handleChangeFavor()}>
                         <Image
@@ -369,6 +393,7 @@ const Score = ({navigation, route}: any) => {
                     return (
                       <View style={styles.courtContainer}>
                         <TouchableOpacity
+                          disabled={isRunning ? false : true}
                           onPress={() => incrementPlayer1()}
                           delayLongPress={2000}
                           onLongPress={() => decrementPlayer1()}>
@@ -378,6 +403,7 @@ const Score = ({navigation, route}: any) => {
                           />
                         </TouchableOpacity>
                         <TouchableOpacity
+                          disabled={isRunning ? false : true}
                           onPress={() => incrementPlayer2()}
                           delayLongPress={2000}
                           onLongPress={() => decrementPlayer2()}>
@@ -392,6 +418,7 @@ const Score = ({navigation, route}: any) => {
                     return (
                       <View style={styles.courtContainer}>
                         <TouchableOpacity
+                          disabled={isRunning ? false : true}
                           onPress={() => incrementPlayer1()}
                           delayLongPress={2000}
                           onLongPress={() => decrementPlayer1()}>
@@ -401,6 +428,7 @@ const Score = ({navigation, route}: any) => {
                           />
                         </TouchableOpacity>
                         <TouchableOpacity
+                          disabled={isRunning ? false : true}
                           onPress={() => incrementPlayer2()}
                           delayLongPress={2000}
                           onLongPress={() => decrementPlayer2()}>
@@ -424,6 +452,7 @@ const Score = ({navigation, route}: any) => {
                     return (
                       <View style={styles.courtContainer}>
                         <TouchableOpacity
+                          disabled={isRunning ? false : true}
                           onPress={() => incrementPlayer1()}
                           delayLongPress={2000}
                           onLongPress={() => decrementPlayer1()}>
@@ -433,6 +462,7 @@ const Score = ({navigation, route}: any) => {
                           />
                         </TouchableOpacity>
                         <TouchableOpacity
+                          disabled={isRunning ? false : true}
                           onPress={() => incrementPlayer2()}
                           delayLongPress={2000}
                           onLongPress={() => decrementPlayer2()}>
@@ -447,6 +477,7 @@ const Score = ({navigation, route}: any) => {
                     return (
                       <View style={styles.courtContainer}>
                         <TouchableOpacity
+                          disabled={isRunning ? false : true}
                           onPress={() => incrementPlayer1()}
                           delayLongPress={2000}
                           onLongPress={() => decrementPlayer1()}>
@@ -456,6 +487,7 @@ const Score = ({navigation, route}: any) => {
                           />
                         </TouchableOpacity>
                         <TouchableOpacity
+                          disabled={isRunning ? false : true}
                           onPress={() => incrementPlayer2()}
                           delayLongPress={2000}
                           onLongPress={() => decrementPlayer2()}>
@@ -499,9 +531,10 @@ const Score = ({navigation, route}: any) => {
             <TouchableOpacity
               style={styles.buttonPause}
               onPress={() => {
+                setIsRunning(!isRunning);
                 handlePause();
               }}>
-              <Text style={styles.buttonTextPause}>PAUSE</Text>
+              <Text style={styles.buttonTextPause}>{isRunning ? 'PAUSE' : 'RESUME'}</Text>
             </TouchableOpacity>
           </View>
 

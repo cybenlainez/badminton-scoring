@@ -6,8 +6,8 @@
     android:background="@color/primary_dark"
     >
     <ImageView 
-    android:layout_width="400px"
-    android:layout_height="151px"
+    android:layout_width="500px"
+    android:layout_height="189px"
     android:src="@drawable/launch_screen" 
     android:scaleType="centerCrop" 
     android:layout_centerInParent="true"

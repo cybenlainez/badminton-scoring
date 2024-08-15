@@ -21,6 +21,7 @@ interface HeaderProps {
   isProfile: boolean;
   isBack: boolean;
   isSettings: boolean;
+  duration: any;
 }
 
 const formatTime = (time: any) => {
@@ -40,10 +41,9 @@ const Header: React.FC<HeaderProps> = ({
   isProfile,
   isBack,
   isSettings,
+  duration,
 }) => {
   const navigation = useNavigation();
-  const [headerTime, setHeaderTime] = useState(0); // Holds the elapsed time in seconds
-  const [isRunning, setIsRunning] = useState(true); // Indicates if the timer is running
   const [uri, setUri] = useState(null);
   const [name, setName] = useState('');
   const [titleP, setTitleP] = useState('');
@@ -114,28 +114,7 @@ const Header: React.FC<HeaderProps> = ({
   useFocusEffect(
     useCallback(() => {
       getData();
-
-
-
-
-
-      // CYHERE - calculate correct duration
-
-
-
-      
-
-      // time
-      let interval: any = null;
-
-      if (isRunning) {
-        interval = setInterval(() => {
-          setHeaderTime(prevTime => prevTime + 1);
-        }, 1000); // Increment time by 1 second
-      } else if (!isRunning && headerTime !== 0) {
-        clearInterval(interval);
-      }
-    }, [isRunning]),
+    }, []),
   );
 
   return (
@@ -162,7 +141,7 @@ const Header: React.FC<HeaderProps> = ({
             />
           </TouchableOpacity>
           {time ? (
-            <Text style={styles.time}>{formatTime(headerTime)}</Text>
+            <Text style={styles.time}>{formatTime(duration)}</Text>
           ) : (
             <></>
           )}
