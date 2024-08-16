@@ -39,6 +39,7 @@ const Settings = () => {
               isProfile={false}
               isBack={false}
               isSettings={false}
+              duration={null}
             />
 
             <View style={styles.content}>

@@ -185,11 +185,12 @@ const History = ({navigation, route}: any) => {
             <Header
               time={false}
               icon={false}
-              title={name != null ? 'Welcome ' + name + '!' : 'Welcome!'}
+              title='Welcome!'
               subtitle="It requires control, strength & measured movement."
               isProfile={false}
               isBack={false}
               isSettings={false}
+              duration={null}
             />
             <View style={styles.content}>
               {currentGameDetails && (

@@ -132,6 +132,7 @@ const Profile = () => {
               isProfile={true}
               isBack={true}
               isSettings={true}
+              duration={null}
             />
 
             <View style={styles.content}>
