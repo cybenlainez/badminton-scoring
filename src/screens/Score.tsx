@@ -17,7 +17,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {format} from 'date-fns';
 import {ScoreDetails} from '../interfaces/ScoreDetails';
 import {countryData} from '../data/countryData';
-import { Teams } from '../interfaces/Teams';
+import {Teams} from '../interfaces/Teams';
 import {useFocusEffect} from '@react-navigation/native';
 
 const Score = ({navigation, route}: any) => {
@@ -191,8 +191,10 @@ const Score = ({navigation, route}: any) => {
   const endGame = async () => {
     if (
       currentSet > 3 ||
-      (currentGameDetails.p1Set1Score > currentGameDetails.p2Set1Score && currentGameDetails.p1Set2Score > currentGameDetails.p2Set2Score) ||
-      (currentGameDetails.p2Set1Score > currentGameDetails.p1Set1Score && currentGameDetails.p2Set2Score > currentGameDetails.p1Set2Score)
+      (currentGameDetails.p1Set1Score > currentGameDetails.p2Set1Score &&
+        currentGameDetails.p1Set2Score > currentGameDetails.p2Set2Score) ||
+      (currentGameDetails.p2Set1Score > currentGameDetails.p1Set1Score &&
+        currentGameDetails.p2Set2Score > currentGameDetails.p1Set2Score)
     ) {
       try {
         const score = await AsyncStorage.getItem('score');
@@ -270,7 +272,7 @@ const Score = ({navigation, route}: any) => {
     useCallback(() => {
       getCurrentData();
       getTeams();
-      
+
       // time
       let interval: any = null;
 
@@ -534,7 +536,7 @@ const Score = ({navigation, route}: any) => {
                 setIsRunning(!isRunning);
                 handlePause();
               }}>
-              <Text style={styles.buttonTextPause}>{isRunning ? 'PAUSE' : 'RESUME'}</Text>
+              <Text style={styles.buttonTextPause}>PAUSE</Text>
             </TouchableOpacity>
           </View>
 
@@ -561,6 +563,18 @@ const Score = ({navigation, route}: any) => {
               <Text style={styles.buttonTextSave}>SAVE &amp; EXIT</Text>
             </TouchableOpacity>
           </View>
+
+          {!isRunning && (
+            <TouchableOpacity
+              style={styles.pauseGameContainer}
+              onPress={() => {
+                setIsRunning(true);
+              }}>
+              <View style={styles.pauseGameTextContainer}>
+                <Text style={styles.pauseGameText}>PRESS ANYWHERE TO RESUME GAME</Text>
+              </View>
+            </TouchableOpacity>
+          )}
         </View>
       </ScrollView>
     </View>
@@ -568,6 +582,25 @@ const Score = ({navigation, route}: any) => {
 };
 
 const styles = StyleSheet.create({
+  pauseGameContainer: {
+    height: '100%',
+    width: '100%',
+    backgroundColor: COLORS.primaryBlackRGBA,
+    zIndex: 10,
+    top: 0,
+    left: 0,
+    position: 'absolute',
+  },
+  pauseGameTextContainer: {
+    margin: 'auto',
+  },
+  pauseGameText: {
+    color: COLORS.primaryWhiteHex,
+    fontWeight: 'bold',
+    fontSize: FONTSIZE.size_14,
+    letterSpacing: 0,
+  },
+
   screenContainer: {
     flex: 1,
     backgroundColor: COLORS.primaryBlackHex,

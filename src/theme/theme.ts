@@ -51,6 +51,7 @@ interface Color {
   primaryBlackRGBA: string;
   secondaryBlackRGBA: string;
   tertiaryBlackRGBA: string;
+  quarternaryBlackRGBA: string;
   primaryGreenHex: string;
   primaryRedHex: string;
   secondaryGreenHex: string;
@@ -81,6 +82,7 @@ export const COLORS: Color = {
   primaryBlackRGBA: 'rgba(0,0,0,0.7)',
   secondaryBlackRGBA: 'rgba(0,0,0,0.9)',
   tertiaryBlackRGBA: 'rgba(0,0,0,0.5)',
+  quarternaryBlackRGBA: 'rgba(0,0,0,0.3)',
   primaryGreenHex: '#00A42E',
   primaryRedHex: '#E10000',
   secondaryGreenHex: '#00BA00',
