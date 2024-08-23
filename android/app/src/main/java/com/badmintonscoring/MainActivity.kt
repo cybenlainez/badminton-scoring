@@ -1,4 +1,4 @@
-package com.badmintonscoring
+package com.probis.badmintonscoring
 
 import android.os.Bundle
 import org.devio.rn.splashscreen.SplashScreen

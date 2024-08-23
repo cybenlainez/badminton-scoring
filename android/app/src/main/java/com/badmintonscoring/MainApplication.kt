@@ -1,4 +1,4 @@
-package com.badmintonscoring
+package com.probis.badmintonscoring
 
 import android.app.Application
 import com.facebook.react.PackageList

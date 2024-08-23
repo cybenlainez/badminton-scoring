@@ -1,7 +1,7 @@
 import React from 'react'
 import { StyleSheet } from 'react-native'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
-import { COLORS } from '../theme/theme'
+import { COLORS, SPACING } from '../theme/theme'
 import { BlurView } from '@react-native-community/blur'
 import HistoryScreen from '../screens/History'
 import ScoreScreen from '../screens/Score'
@@ -93,6 +93,7 @@ const styles = StyleSheet.create({
         borderTopWidth: 0,
         elevation: 0,
         borderTopColor: 'transparent',
+        paddingBottom: SPACING.space_15,
         //display: 'none'
     },
     BlurViewStyles: {

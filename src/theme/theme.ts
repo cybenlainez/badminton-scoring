@@ -57,18 +57,6 @@ interface Color {
   secondaryGreenHex: string;
   primaryYellowHex: string;
   primaryDarkGrayHex: string;
-  // primaryRedHex: string;
-  // primaryOrangeHex: string;
-  // primaryBlackHex: string;
-  // primaryDarkGreyHex: string;
-  // secondaryDarkGreyHex: string;
-  // primaryGreyHex: string;
-  // secondaryGreyHex: string;
-  // primaryLightGreyHex: string;
-  // secondaryLightGreyHex: string;
-  // primaryWhiteHex: string;
-  // primaryBlackRGBA: string;
-  // secondaryBlackRGBA: string;
 }
 
 export const COLORS: Color = {  
@@ -88,16 +76,6 @@ export const COLORS: Color = {
   secondaryGreenHex: '#00BA00',
   primaryYellowHex: '#FFC700',
   primaryDarkGrayHex: '#171717',
-  // primaryRedHex: '#DC3535',
-  // primaryOrangeHex: '#D17842',
-  // primaryBlackHex: '#0C0F14',
-  // primaryDarkGreyHex: '#141921',
-  // secondaryDarkGreyHex: '#21262E',
-  // primaryGreyHex: '#252A32',
-  // secondaryGreyHex: '#252A32',
-  // primaryLightGreyHex: '#52555A',
-  // secondaryLightGreyHex: '#AEAEAE',
-  // secondaryBlackRGBA: 'rgba(0,0,0,0.7)',
 };
 
 interface FontFamily {
