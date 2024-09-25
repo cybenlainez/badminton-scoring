@@ -19,6 +19,7 @@ const HEIGHT = Dimensions.get('window').height;
 interface VenueItemProps {
   venue: Venues;
   onEditVenue: any;
+  onDeleteVenue: any;
   onToggle: any;
   index: number;
 }
@@ -26,6 +27,7 @@ interface VenueItemProps {
 const VenueItem = ({
   venue,
   onEditVenue,
+  onDeleteVenue,
   onToggle,
   index,
 }: VenueItemProps) => {
@@ -64,10 +66,7 @@ const VenueItem = ({
         onRequestClose={() => setIsModalVisible(false)}
         animationType="fade"
         transparent>
-        <Pressable
-          style={[styles.modalPressable, {height: HEIGHT / 2}]}
-          onPress={() => setIsModalVisible(false)}
-        />
+        <Pressable style={styles.modalPressable} onPress={() => setIsModalVisible(false)} />
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.scrollViewFlex}>
@@ -87,6 +86,16 @@ const VenueItem = ({
                   setIsModalVisible(false);
                 }}>
                 <Text style={styles.buttonText}>UPDATE</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.buttonSave}>
+              <TouchableOpacity
+                style={styles.button}
+                onPress={() => {
+                  onDeleteVenue(venue.label);
+                  setIsModalVisible(false);
+                }}>
+                <Text style={styles.buttonDeleteText}>DELETE</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -114,6 +123,7 @@ const styles = StyleSheet.create({
   modalPressable: {
     backgroundColor: COLORS.primaryBlackHex,
     opacity: 0.7,
+    height: '70%',
   },
   scrollViewFlex: {
     flexGrow: 1,
@@ -144,17 +154,19 @@ const styles = StyleSheet.create({
     paddingBottom: SPACING.space_20,
   },
   button: {
-    backgroundColor: COLORS.primaryGreenHex,
-    flex: 1,
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    height: SPACING.space_48,
-    borderRadius: BORDERRADIUS.radius_4,
+    gap: SPACING.space_4,
   },
   buttonText: {
     fontWeight: 'bold',
     fontSize: FONTSIZE.size_14,
-    color: COLORS.primaryWhiteHex,
+    color: COLORS.primaryGreenHex,
+  },
+  buttonDeleteText: {
+    fontWeight: 'bold',
+    fontSize: FONTSIZE.size_14,
+    color: COLORS.primaryYellowHex,
   },
 });
 

@@ -11,6 +11,7 @@ import {
   TextInput,
   Image,
   Switch,
+  ToastAndroid,
 } from 'react-native';
 import React, {useState, useCallback} from 'react';
 import {BORDERRADIUS, COLORS, FONTSIZE, SPACING} from '../theme/theme';
@@ -51,9 +52,10 @@ const History = ({navigation, route}: any) => {
   });
   const tabBarHeight = useBottomTabBarHeight();
   const [name, setName] = useState('');
-  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [questionModal, setQuestionModal] = useState(false);
+  const [isNewGameModal, setIsNewGameModal] = useState(false);
   const [mode, setMode] = useState(false);
-  const [p1A, setP1A] = useState('');
+  const [p1A, setP1A] = useState(name);
   const [p1B, setP1B] = useState('');
   const [p2A, setP2A] = useState('');
   const [p2B, setP2B] = useState('');
@@ -66,14 +68,23 @@ const History = ({navigation, route}: any) => {
   const [isFocusVenue, setIsFocusVenue] = useState(false);
 
   const createNewGame = () => {
-    setP1A('');
+    if (currentGameDetails) {
+      setQuestionModal(true);
+    } else {
+      initializeNewGame();
+    }
+  };
+
+  const initializeNewGame = () => {
+    setQuestionModal(false);
+    setP1A(name);
     setP1B('');
     setP2A('');
     setP2B('');
     setP1Country(1);
     setP2Country(1);
     setVenue(null);
-    setIsModalVisible(true);
+    setIsNewGameModal(true);
   };
 
   const renderItem = (item: any) => {
@@ -122,6 +133,29 @@ const History = ({navigation, route}: any) => {
   };
 
   const handleStartGame = async () => {
+    // singles
+    if (!mode) {
+      if (p1A == '' || p2A == '' || venue == null) {
+        ToastAndroid.showWithGravity(
+          `Please enter the required game details.`,
+          ToastAndroid.SHORT,
+          ToastAndroid.CENTER,
+        );
+        return;
+      }
+    }
+    // doubles
+    else {
+      if (p1A == '' || p2A == '' || p1B == '' || p2B == '' || venue == null) {
+        ToastAndroid.showWithGravity(
+          `Please enter the required game details.`,
+          ToastAndroid.SHORT,
+          ToastAndroid.CENTER,
+        );
+        return;
+      }
+    }
+
     try {
       const value = {
         date: Date.now(),
@@ -148,7 +182,7 @@ const History = ({navigation, route}: any) => {
       await AsyncStorage.setItem('currentGame', JSON.stringify(value));
       console.log('Current game added');
 
-      setIsModalVisible(false);
+      setIsNewGameModal(false);
       navigation.push('Score', {params: value});
     } catch (e) {
       console.error(e);
@@ -220,8 +254,8 @@ const History = ({navigation, route}: any) => {
 
           {/* players info modal */}
           <Modal
-            visible={isModalVisible}
-            onRequestClose={() => setIsModalVisible(false)}
+            visible={isNewGameModal}
+            onRequestClose={() => setIsNewGameModal(false)}
             animationType="fade"
             transparent>
             <Pressable
@@ -229,7 +263,7 @@ const History = ({navigation, route}: any) => {
                 styles.modalPressable,
                 {height: mode ? HEIGHT / 3.7 : HEIGHT / 2.3},
               ]}
-              onPress={() => setIsModalVisible(false)}
+              onPress={() => setIsNewGameModal(false)}
             />
             <ScrollView
               showsVerticalScrollIndicator={false}
@@ -382,6 +416,32 @@ const History = ({navigation, route}: any) => {
               </View>
             </ScrollView>
           </Modal>
+
+          {/* question modal */}
+          <Modal
+            visible={questionModal}
+            onRequestClose={() => setQuestionModal(false)}
+            animationType="fade"
+            transparent>
+            <View style={styles.questionModalContainer}>
+              <View style={styles.questionModalView}>
+                <Text style={styles.buttonText}>There is an on-going game.</Text>
+                <Text style={styles.buttonText}>Are you sure you want to start a new game?</Text>
+                <View style={styles.modalButtonContainer}>
+                  <TouchableOpacity
+                    style={styles.buttonNo}
+                    onPress={() => setQuestionModal(false)}>
+                    <Text style={styles.buttonNoText}>NO</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.button}
+                    onPress={() => initializeNewGame()}>
+                    <Text style={styles.buttonText}>YES</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          </Modal>
         </View>
       </ScrollView>
     </View>
@@ -435,6 +495,19 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: FONTSIZE.size_14,
     color: COLORS.primaryWhiteHex,
+  },
+  buttonNo: {
+    backgroundColor: COLORS.primaryWhiteHex,
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: SPACING.space_48,
+    borderRadius: BORDERRADIUS.radius_4,
+  },
+  buttonNoText: {
+    fontWeight: 'bold',
+    fontSize: FONTSIZE.size_14,
+    color: COLORS.primaryBlackHex,
   },
   modalContent: {
     flex: 1,
@@ -560,6 +633,36 @@ const styles = StyleSheet.create({
   iconStyle: {
     width: 20,
     height: 20,
+  },
+
+  // question modal
+  questionModalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+  },
+  questionModalView: {
+    margin: SPACING.space_20,
+    backgroundColor: COLORS.primaryDarkGrayHex,
+    borderRadius: BORDERRADIUS.radius_4,
+    padding: SPACING.space_32,
+    alignItems: 'center',
+    shadowColor: COLORS.primaryBlackHex,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  modalButtonContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: SPACING.space_20,
+    paddingTop: SPACING.space_20,
   },
 });
 

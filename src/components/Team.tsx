@@ -15,6 +15,7 @@ import {useFocusEffect} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Teams} from '../interfaces/Teams';
 import TeamItem from './TeamItem';
+import { Plus } from 'iconoir-react-native';
 
 const HEIGHT = Dimensions.get('window').height;
 
@@ -81,6 +82,14 @@ const Team = () => {
     await AsyncStorage.setItem('teams', jsonValue);
     setTeams(updatedData);
   };
+  
+  const onDeleteTeam = async (value: number) => {
+    let updatedData = teams;
+    updatedData = updatedData.filter(item => item.value !== value);
+    const jsonValue = JSON.stringify(updatedData);
+    await AsyncStorage.setItem('teams', jsonValue);
+    setTeams(updatedData);
+  };
 
   const onToggleTeam = async (status: boolean, index: number) => {
     let updatedData = teams;
@@ -110,6 +119,7 @@ const Team = () => {
                 team={data}
                 onToggle={onToggleTeam}
                 onEditTeam={onEditTeam}
+                onDeleteTeam={onDeleteTeam}
                 index={index}
                 key={index}
               />
@@ -119,7 +129,13 @@ const Team = () => {
 
       <View style={styles.buttonAddContainer}>
         <TouchableOpacity style={styles.button} onPress={() => handleAdd()}>
-          <Text style={styles.buttonText}>ADD TEAM</Text>
+          <Plus
+            width={17}
+            height={17}
+            strokeWidth={3}
+            color={COLORS.primaryGreenHex}
+          />
+          <Text style={styles.buttonText}>ADD A TEAM</Text>
         </TouchableOpacity>
       </View>
 
@@ -129,10 +145,7 @@ const Team = () => {
         onRequestClose={() => setIsModalVisible(false)}
         animationType="fade"
         transparent>
-        <Pressable
-          style={[styles.modalPressable, {height: HEIGHT / 2}]}
-          onPress={() => setIsModalVisible(false)}
-        />
+        <Pressable style={styles.modalPressable} onPress={() => setIsModalVisible(false)} />
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.scrollViewFlex}>
@@ -183,23 +196,21 @@ const styles = StyleSheet.create({
     paddingBottom: SPACING.space_20,
   },
   button: {
-    backgroundColor: COLORS.primaryGreenHex,
-    flex: 1,
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    height: SPACING.space_48,
-    borderRadius: BORDERRADIUS.radius_4,
+    gap: SPACING.space_4,
   },
   buttonText: {
     fontWeight: 'bold',
     fontSize: FONTSIZE.size_14,
-    color: COLORS.primaryWhiteHex,
+    color: COLORS.primaryGreenHex,
   },
 
   // modal
   modalPressable: {
     backgroundColor: COLORS.primaryBlackHex,
     opacity: 0.7,
+    height: '80%',
   },
   scrollViewFlex: {
     flexGrow: 1,

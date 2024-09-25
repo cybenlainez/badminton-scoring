@@ -397,7 +397,7 @@ const Score = ({navigation, route}: any) => {
                         <TouchableOpacity
                           disabled={isRunning ? false : true}
                           onPress={() => incrementPlayer1()}
-                          delayLongPress={2000}
+                          delayLongPress={1000}
                           onLongPress={() => decrementPlayer1()}>
                           <Image
                             style={styles.courtImage}
@@ -407,7 +407,7 @@ const Score = ({navigation, route}: any) => {
                         <TouchableOpacity
                           disabled={isRunning ? false : true}
                           onPress={() => incrementPlayer2()}
-                          delayLongPress={2000}
+                          delayLongPress={1000}
                           onLongPress={() => decrementPlayer2()}>
                           <Image
                             style={styles.courtImage}
@@ -422,7 +422,7 @@ const Score = ({navigation, route}: any) => {
                         <TouchableOpacity
                           disabled={isRunning ? false : true}
                           onPress={() => incrementPlayer1()}
-                          delayLongPress={2000}
+                          delayLongPress={1000}
                           onLongPress={() => decrementPlayer1()}>
                           <Image
                             style={styles.courtImage}
@@ -432,7 +432,7 @@ const Score = ({navigation, route}: any) => {
                         <TouchableOpacity
                           disabled={isRunning ? false : true}
                           onPress={() => incrementPlayer2()}
-                          delayLongPress={2000}
+                          delayLongPress={1000}
                           onLongPress={() => decrementPlayer2()}>
                           <Image
                             style={styles.courtImage}
@@ -456,7 +456,7 @@ const Score = ({navigation, route}: any) => {
                         <TouchableOpacity
                           disabled={isRunning ? false : true}
                           onPress={() => incrementPlayer1()}
-                          delayLongPress={2000}
+                          delayLongPress={1000}
                           onLongPress={() => decrementPlayer1()}>
                           <Image
                             style={styles.courtImage}
@@ -466,7 +466,7 @@ const Score = ({navigation, route}: any) => {
                         <TouchableOpacity
                           disabled={isRunning ? false : true}
                           onPress={() => incrementPlayer2()}
-                          delayLongPress={2000}
+                          delayLongPress={1000}
                           onLongPress={() => decrementPlayer2()}>
                           <Image
                             style={styles.courtImage}
@@ -481,7 +481,7 @@ const Score = ({navigation, route}: any) => {
                         <TouchableOpacity
                           disabled={isRunning ? false : true}
                           onPress={() => incrementPlayer1()}
-                          delayLongPress={2000}
+                          delayLongPress={1000}
                           onLongPress={() => decrementPlayer1()}>
                           <Image
                             style={styles.courtImage}
@@ -491,7 +491,7 @@ const Score = ({navigation, route}: any) => {
                         <TouchableOpacity
                           disabled={isRunning ? false : true}
                           onPress={() => incrementPlayer2()}
-                          delayLongPress={2000}
+                          delayLongPress={1000}
                           onLongPress={() => decrementPlayer2()}>
                           <Image
                             style={styles.courtImage}

@@ -17,18 +17,31 @@ import {Dropdown, SelectCountry} from 'react-native-element-dropdown';
 import {countryData} from '../data/countryData';
 import {Genders} from '../interfaces/Genders';
 import {useFocusEffect} from '@react-navigation/native';
+import { Teams } from '../interfaces/Teams';
 
 const Profile = () => {
   const tabBarHeight = useBottomTabBarHeight();
-  const [uri, setUri] = useState('');
-  const [name, setName] = useState('');
-  const [title, setTitle] = useState('');
-  const [country, setCountry] = useState(1);
-  const [age, setAge] = useState<number>(0);
-  const [ageInputValue, setAgeInputValue] = useState<string>('');
-  const [gender, setGender] = useState(null);
-  const [bio, setBio] = useState('');
+  const [initialData, setInitialData] = useState({
+    uri: '',
+    name: '',
+    title: '',
+    country: 1,
+    age: '',
+    gender: null,
+    biography: '',
+  });
+  const [currentData, setCurrentData] = useState({
+    uri: '',
+    name: '',
+    title: '',
+    country: 1,
+    age: '',
+    gender: null,
+    biography: '',
+  });
+  const [hasChanges, setHasChanges] = useState(false);
   const [genders, setGenders] = useState<Genders[]>([]);
+  const [teams, setTeams] = useState<Teams[]>([]);
 
   const [isFocusGender, setIsFocusGender] = useState(false);
   const [isFocusCountry, setIsFocusCountry] = useState(false);
@@ -51,23 +64,19 @@ const Profile = () => {
         pUri = p.uri;
       }
 
-      const parsedAgeValue = parseInt(ageInputValue); // Ensure the input value is parsed to a number
-
-      if (!isNaN(parsedAgeValue)) {
-        setAge(parsedAgeValue);
-      }
-
       const value = {
         uri: pUri,
-        name: name,
-        title: title,
-        country: country,
-        age: parsedAgeValue,
-        gender: gender,
-        biography: bio,
+        name: currentData.name,
+        title: currentData.title,
+        country: currentData.country,
+        age: currentData.age,
+        gender: currentData.gender,
+        biography: currentData.biography,
       };
 
       await AsyncStorage.setItem('profile', JSON.stringify(value));
+      setInitialData(currentData);
+      setHasChanges(false);
       ToastAndroid.showWithGravity(
         `The changes have been saved.`,
         ToastAndroid.SHORT,
@@ -85,14 +94,8 @@ const Profile = () => {
 
       if (profile != null) {
         let p = JSON.parse(profile);
-        setUri(p.uri);
-        setName(p.name);
-        setTitle(p.title);
-        setCountry(p.country);
-        setAge(p.age);
-        setAgeInputValue(p.age.toString());
-        setGender(p.gender);
-        setBio(p.biography);
+        setInitialData(p);
+        setCurrentData(p);
       }
     } catch (e) {
       console.error(e);
@@ -108,11 +111,42 @@ const Profile = () => {
     }
   };
 
+  const getTeams = async () => {
+    try {
+      const teams = await AsyncStorage.getItem('teams');
+      setTeams(JSON.parse(teams));
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const handleChange = (key: string, value: any) => {
+    setCurrentData({
+      ...currentData,
+      [key]: value
+    });
+  };
+
   useFocusEffect(
     useCallback(() => {
       getData();
       getGenders();
+      getTeams();
     }, []),
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      const hasChanges = 
+        currentData.uri !== initialData.uri || 
+        currentData.name !== initialData.name || 
+        currentData.title !== initialData.title || 
+        currentData.country !== initialData.country || 
+        currentData.age !== initialData.age || 
+        currentData.gender !== initialData.gender || 
+        currentData.biography !== initialData.biography;
+      setHasChanges(hasChanges);
+    }, [currentData, initialData]),
   );
 
   return (
@@ -127,8 +161,8 @@ const Profile = () => {
             <Header
               time={false}
               icon={false}
-              title={name == '' ? '(enter your name)' : name}
-              subtitle={title == '' ? '(enter your title/description)' : title}
+              title={currentData.name == '' ? '(enter your name)' : currentData.name}
+              subtitle={currentData.title == '' ? '(enter your title/description)' : currentData.title}
               isProfile={true}
               isBack={true}
               isSettings={true}
@@ -140,15 +174,15 @@ const Profile = () => {
                 placeholder="Name"
                 placeholderTextColor={COLORS.primaryLightGreyHex}
                 style={styles.input}
-                value={name}
-                onChangeText={value => setName(value)}
+                value={currentData.name}
+                onChangeText={value => handleChange('name', value)}
               />
               <TextInput
                 placeholder="Title"
                 placeholderTextColor={COLORS.primaryLightGreyHex}
                 style={styles.input}
-                value={title}
-                onChangeText={value => setTitle(value)}
+                value={currentData.title}
+                onChangeText={value => handleChange('title', value)}
               />
               <View style={styles.threeColumns}>
                 <SelectCountry
@@ -161,23 +195,23 @@ const Profile = () => {
                   iconStyle={styles.iconStyle}
                   search
                   maxHeight={300}
-                  value={country}
-                  data={countryData}
+                  value={currentData.country}
+                  data={teams != null ? teams.filter((venue, index) => venue.status === true).concat(countryData) : countryData}
                   valueField="value"
                   labelField="label"
                   imageField="image"
                   placeholder={!isFocusCountry ? '' : ''}
                   searchPlaceholder="search..."
                   onChange={(e: {value: React.SetStateAction<number>}) => {
-                    setCountry(e.value);
+                    handleChange('country', e.value);
                   }}
                 />
                 <TextInput
                   placeholder="Age"
                   placeholderTextColor={COLORS.primaryLightGreyHex}
                   style={styles.input}
-                  value={ageInputValue}
-                  onChangeText={setAgeInputValue}
+                  value={currentData.age}
+                  onChangeText={value => handleChange('age', value)}
                   keyboardType="numeric"
                 />
                 <Dropdown
@@ -197,11 +231,11 @@ const Profile = () => {
                   valueField="value"
                   placeholder={!isFocusGender ? 'Gender' : ''}
                   searchPlaceholder="search..."
-                  value={gender}
+                  value={currentData.gender}
                   onFocus={() => setIsFocusGender(true)}
                   onBlur={() => setIsFocusGender(false)}
                   onChange={(item: {value: React.SetStateAction<null>}) => {
-                    setGender(item.value);
+                    handleChange('gender', item.value);
                     setIsFocusGender(false);
                   }}
                   renderItem={renderItem}
@@ -214,14 +248,14 @@ const Profile = () => {
                 placeholder="Biography"
                 placeholderTextColor={COLORS.primaryLightGreyHex}
                 style={styles.input}
-                value={bio}
-                onChangeText={value => setBio(value)}
+                value={currentData.biography}
+                onChangeText={value => handleChange('biography', value)}
               />
             </View>
           </View>
 
           <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.button} onPress={saveData}>
+            <TouchableOpacity disabled={!hasChanges} style={hasChanges ? styles.button : styles.buttonDisabled} onPress={saveData}>
               <Text style={styles.buttonText}>SAVE</Text>
             </TouchableOpacity>
           </View>
@@ -260,6 +294,14 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: COLORS.primaryGreenHex,
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: SPACING.space_48,
+    borderRadius: BORDERRADIUS.radius_4,
+  },
+  buttonDisabled: {
+    backgroundColor: COLORS.tertiaryWhiteRGBA,
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',

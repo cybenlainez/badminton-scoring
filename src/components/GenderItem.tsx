@@ -17,15 +17,19 @@ import {Genders} from '../interfaces/Genders';
 const HEIGHT = Dimensions.get('window').height;
 
 interface GenderItemProps {
+  isDefault: boolean;
   gender: Genders;
   onEditGender: any;
+  onDeleteGender: any;
   onToggle: any;
   index: number;
 }
 
 const GenderItem = ({
+  isDefault,
   gender,
   onEditGender,
+  onDeleteGender,
   onToggle,
   index,
 }: GenderItemProps) => {
@@ -40,10 +44,11 @@ const GenderItem = ({
 
   return (
     <>
-      <TouchableOpacity onPress={() => handleSelectItem(gender.label)}>
+      <TouchableOpacity disabled={isDefault} onPress={() => handleSelectItem(gender.label)}>
         <View style={styles.item}>
           <Text style={styles.itemText}>{gender.label}</Text>
           <Switch
+            disabled={isDefault}
             value={toggleStatus}
             onValueChange={() => {
               onToggle(!toggleStatus, index);
@@ -51,7 +56,7 @@ const GenderItem = ({
             }}
             trackColor={{
               false: COLORS.primaryWhiteHex,
-              true: COLORS.primaryGreenHex,
+              true: isDefault ? COLORS.secondaryWhiteRGBA : COLORS.primaryGreenHex,
             }}
             thumbColor="#f4f3f4"
           />
@@ -64,10 +69,7 @@ const GenderItem = ({
         onRequestClose={() => setIsModalVisible(false)}
         animationType="fade"
         transparent>
-        <Pressable
-          style={[styles.modalPressable, {height: HEIGHT / 2}]}
-          onPress={() => setIsModalVisible(false)}
-        />
+        <Pressable style={styles.modalPressable} onPress={() => setIsModalVisible(false)} />
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.scrollViewFlex}>
@@ -87,6 +89,16 @@ const GenderItem = ({
                   setIsModalVisible(false);
                 }}>
                 <Text style={styles.buttonText}>UPDATE</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.buttonSave}>
+              <TouchableOpacity
+                style={styles.button}
+                onPress={() => {
+                  onDeleteGender(gender.label);
+                  setIsModalVisible(false);
+                }}>
+                <Text style={styles.buttonDeleteText}>DELETE</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -114,6 +126,7 @@ const styles = StyleSheet.create({
   modalPressable: {
     backgroundColor: COLORS.primaryBlackHex,
     opacity: 0.7,
+    height: '70%',
   },
   scrollViewFlex: {
     flexGrow: 1,
@@ -144,17 +157,19 @@ const styles = StyleSheet.create({
     paddingBottom: SPACING.space_20,
   },
   button: {
-    backgroundColor: COLORS.primaryGreenHex,
-    flex: 1,
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    height: SPACING.space_48,
-    borderRadius: BORDERRADIUS.radius_4,
+    gap: SPACING.space_4,
   },
   buttonText: {
     fontWeight: 'bold',
     fontSize: FONTSIZE.size_14,
-    color: COLORS.primaryWhiteHex,
+    color: COLORS.primaryGreenHex,
+  },
+  buttonDeleteText: {
+    fontWeight: 'bold',
+    fontSize: FONTSIZE.size_14,
+    color: COLORS.primaryYellowHex,
   },
 });
 
