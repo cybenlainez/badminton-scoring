@@ -79,8 +79,8 @@ android {
         applicationId "com.probis.badmintonscoring"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 5
-        versionName "1.4"
+        versionCode 9
+        versionName "1.9"
     }
     signingConfigs {
         release {

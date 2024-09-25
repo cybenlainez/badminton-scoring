@@ -18,6 +18,7 @@ import {countryData} from '../data/countryData';
 import {Genders} from '../interfaces/Genders';
 import {useFocusEffect} from '@react-navigation/native';
 import { Teams } from '../interfaces/Teams';
+import {genderData} from '../data/genderData';
 
 const Profile = () => {
   const tabBarHeight = useBottomTabBarHeight();
@@ -105,7 +106,8 @@ const Profile = () => {
   const getGenders = async () => {
     try {
       const genders = await AsyncStorage.getItem('genders');
-      setGenders(JSON.parse(genders));
+      const allGenders = genders != null ? genderData.concat(JSON.parse(genders)) : genderData;
+      setGenders(allGenders);
     } catch (e) {
       console.error(e);
     }
